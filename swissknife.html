@@ -1,0 +1,21 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width;initial-scale=1">
+<title>LNN's swiss-knife util</title>
+<style>button{padding:4px 8px}</style>
+<h1>LNN's swiss-knife util</h1>
+<textarea style="width:100%;height:300px" id="codebox" placeholder="#codebox"></textarea>
+<div style="margin:8px 0">
+<button onclick="try{let __r=eval(codebox.value);if(__r!==undefined)alert(__r)}catch(e){alert(e)}">eval</button>
+<button onclick="codebox.value=`codebox.value=${JSON.stringify(codebox.value)},text.value=${JSON.stringify(text.value)},[][[]]`,text.value=''">dump</button>
+<div>utf-8 + base64 <button onclick="let a=atob(text.value),b='';for(let i=0;i<a.length;++i)b+='%'+a.charCodeAt(i).toString(16).padStart(2,'0');text.value=decodeURIComponent(b)">decode</button>
+</div>
+<div>
+read <input type="file" id="file" style="display:none">
+<button onclick="file.click()">#file</button>
+as
+<button onclick="var r=new FileReader();r.onload=()=>void(text.value=r.result);r.readAsText(file.files[0])">text</button>
+<button onclick="var r=new FileReader();r.onload=()=>void(text.value=r.result);r.readAsDataURL(file.files[0])">data url</button>
+</div>
+
+</div>
+<textarea style="width:100%;height:300px" id="text" placeholder="#text"></textarea>
