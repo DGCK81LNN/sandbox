@@ -11,6 +11,14 @@
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>
+  <style>
+    :lang(cmn):not(code, pre, samp, kbd) {
+      font-family:  "Source Han CN", "思源黑体 CN", "PingFang SC", "苹方-简", "Microsoft YaHei", "微软雅黑", sans-serif;
+    }
+    code, pre, samp, kbd {
+      font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    }
+  </style>
 </head>
 <body>
 <div id="app">
@@ -40,6 +48,8 @@
       </b-navbar-nav>
     </b-collapse>
   </b-navbar>
+  <p lang="cmn">你好，世界！</p>
+  <p lang="jp">こんにちは、世界！</p>
   <pre style="white-space:pre-wrap">{{ msg }}</pre>
 </div>
 <script>
