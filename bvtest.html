@@ -1,12 +1,12 @@
 <!doctype html>
-<html>
+<html lang=cmn>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="format-detection" content="telephone=no">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
+  <meta charset=utf-8>
+  <meta name=viewport content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name=format-detection content="telephone=no">
+  <link rel=stylesheet href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css">
+  <link rel=stylesheet href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
+  <link rel=stylesheet href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
@@ -16,10 +16,10 @@
 <div id="app">
   <b-navbar
   sticky
-  toggleable="sm"
-  variant="light"
-  class="shadow">
-    <b-navbar-brand href="#">
+  toggleable=sm
+  variant=light
+  class=shadow>
+    <b-navbar-brand href="/">
       <img
         src="https://dgck81lnn.github.io/site_icon.png"
         class="align-middle"
@@ -29,13 +29,13 @@
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
     <b-collapse id="nav-collapse" is-nav>
       <b-navbar-nav class="ml-auto">
-        <b-nav-item href="#" right>首页</b-nav-item>
-        <b-nav-item href="#" right>应用</b-nav-item>
-        <b-nav-item href="#" right>资源</b-nav-item>
+        <b-nav-item href="/home" right>首页</b-nav-item>
+        <b-nav-item href="/apps" right>应用</b-nav-item>
+        <b-nav-item href="/res" right>资源</b-nav-item>
         <b-nav-item-dropdown text="子站" right>
-          <b-dropdown-item href="#">博客区</b-dropdown-item>
-          <b-dropdown-item href="#">沙盒区</b-dropdown-item>
-          <b-dropdown-item href="#">遗留区</b-dropdown-item>
+          <b-dropdown-item href="/bloh">博客区</b-dropdown-item>
+          <b-dropdown-item href="/sandbox" target=_blank>沙盒区</b-dropdown-item>
+          <b-dropdown-item href="/legacy" target=_blank>遗留区</b-dropdown-item>
         </b-nav-item-dropdown>
       </b-navbar-nav>
     </b-collapse>
