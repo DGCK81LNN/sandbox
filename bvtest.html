@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js" onerror="alert('failed')"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>
+</head>
+<body>
+<div id="app">
+{{ msg }}
+<b-button-toolbar key-nav aria-label="Toolbar with button groups">
+    <b-button-group class="mx-1">
+      <b-button>&laquo;</b-button>
+      <b-button>&lsaquo;</b-button>
+    </b-button-group>
+    <b-button-group class="mx-1">
+      <b-button>Edit</b-button>
+      <b-button>Undo</b-button>
+      <b-button>Redo</b-button>
+    </b-button-group>
+    <b-button-group class="mx-1">
+      <b-button>&rsaquo;</b-button>
+      <b-button>&raquo;</b-button>
+    </b-button-group>
+  </b-button-toolbar>
+</div>
+<script onerror="alert()">
+//try {
+var vm = new Vue({
+  el: "#app",
+  data: {
+    msg: "Hello, world!"
+  }
+});
+//} catch(e) { alert(e); }
+</script>
+</body>
+</html>
