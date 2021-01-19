@@ -1,35 +1,46 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="format-detection" content="telephone=no">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>
 </head>
 <body>
 <div id="app">
-{{ msg }}
-<b-button-toolbar key-nav aria-label="Toolbar with button groups">
-    <b-button-group class="mx-1">
-      <b-button>&laquo;</b-button>
-      <b-button>&lsaquo;</b-button>
-    </b-button-group>
-    <b-button-group class="mx-1">
-      <b-button>Edit</b-button>
-      <b-button>Undo</b-button>
-      <b-button>Redo</b-button>
-    </b-button-group>
-    <b-button-group class="mx-1">
-      <b-button>&rsaquo;</b-button>
-      <b-button>&raquo;</b-button>
-    </b-button-group>
-  </b-button-toolbar>
+  <b-navbar
+  sticky
+  toggleable="sm"
+  variant="light"
+  class="shadow">
+    <b-navbar-brand href="#">
+      <img
+        src="https://dgck81lnn.github.io/site_icon.png"
+        class="align-middle"
+        style="height:40px">
+      灵魂小站
+    </b-navbar-brand>
+    <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+    <b-collapse id="nav-collapse" is-nav>
+      <b-navbar-nav class="ml-auto">
+        <b-nav-item href="#" right>首页</b-nav-item>
+        <b-nav-item href="#" right>应用</b-nav-item>
+        <b-nav-item href="#" right>资源</b-nav-item>
+        <b-nav-item-dropdown text="子站" right>
+          <b-dropdown-item href="#">博客区</b-dropdown-item>
+          <b-dropdown-item href="#">沙盒区</b-dropdown-item>
+          <b-dropdown-item href="#">遗留区</b-dropdown-item>
+        </b-nav-item-dropdown>
+      </b-navbar-nav>
+    </b-collapse>
+  </b-navbar>
+  <pre style="white-space:pre-wrap">{{ msg }}</pre>
 </div>
 <script>
 try {
@@ -39,6 +50,7 @@ var vm = new Vue({
     msg: "Hello, world!"
   }
 });
+vm.msg = document.body.firstElementChild.innerHTML;
 } catch(e) { alert(e); }
 </script>
 </body>
