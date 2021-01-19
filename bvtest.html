@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
   <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
   <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js" onerror="alert('failed')"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
   <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>
 </head>
@@ -31,15 +31,15 @@
     </b-button-group>
   </b-button-toolbar>
 </div>
-<script onerror="alert()">
-//try {
+<script>
+try {
 var vm = new Vue({
   el: "#app",
   data: {
     msg: "Hello, world!"
   }
 });
-//} catch(e) { alert(e); }
+} catch(e) { alert(e); }
 </script>
 </body>
 </html>
