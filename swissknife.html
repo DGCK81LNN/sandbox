@@ -55,7 +55,7 @@
         <button onclick="var r='',d;for(d of text.value){let c=d.codePointAt(0).toString(16),m=c.length;r+=m&gt;4?`\\u{${c}}`:m===4?`\\u${c}`:m===3?`\\u0${c}`:m===2?`\\x${c}`:`\\x0${c}`}out.value=`&quot;${r}&quot;`">
           code point escape text
         </button>
-        <button onclick="out.value=`codebox.value=${JSON.stringify(codebox.value)},text.value=${JSON.stringify(text.value)}`">
+        <button onclick="let _td=JSON.stringify(text.value);codebox.value=`text.value=${_td};codebox.value=codebox.value.slice(16+codebox.value.indexOf(\&quot;\\\&quot;SoulLS dump\\\&quot;;\&quot;));throw'';&quot;SoulLS dump&quot;;\n\n${codebox.value}`">
           dump code & text
         </button>
       </div>
