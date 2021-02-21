@@ -280,7 +280,7 @@
             if (!loadedOnce) {
                 videoEl = wavesurfer.backend.media;
                 videoEl.style.cssText = "";
-                videoWrapper.insertBefore(videoEl, titlesWrapper);
+                //videoWrapper.insertBefore(videoEl, titlesWrapper);
                 videoEl.addEventListener("durationchange", () => {
                     scrollEl.max = videoEl.duration;
                 });
