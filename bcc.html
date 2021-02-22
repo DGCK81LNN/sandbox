@@ -54,6 +54,10 @@
         .current-line {
             color: red;
         }
+        
+        .item-content {
+            display: inline-block;
+        }
 
         @media screen and (min-width: 800px) {
             #videoWrapper {
@@ -168,7 +172,7 @@
             body: []
         };
         var currentLineIndex = null;
-        var loadedOnce = false;
+        //var loadedOnce = false;
 
         function update() {
             requestAnimationFrame(update);
@@ -201,8 +205,20 @@
             [...listEl.children].forEach(c => c.remove());
             titles.body.forEach((line, i) => {
                 let itemEl = listEl.appendChild(document.createElement("li"));
-                itemEl.textContent = `[${line.from}-${line.to}] ` + line.content;
                 let btn = itemEl.appendChild(document.createElement("button"));
+                btn.textContent = line.from;
+                btn.addEventListener("click", () => {
+                    wavesurfer.setCurrentTime(line.from);
+                });
+                btn = itemEl.appendChild(document.createElement("button"));
+                btn.textContent = line.to;
+                btn.addEventListener("click", () => {
+                    wavesurfer.setCurrentTime(line.to);
+                });
+                let itemContentEl = listEl.appendChild(document.createElement("div"));
+                itemContentEl.className = "item-content";
+                itemContentEl.textContent = line.content;
+                btn = itemEl.appendChild(document.createElement("button"));
                 btn.textContent = "删除并重新编辑";
                 btn.addEventListener("click", () => {
                     fromEl.value = line.from;
@@ -278,7 +294,7 @@
 
         videoSelectEl.addEventListener("change", () => {
             wavesurfer.load(window.URL.createObjectURL(videoSelectEl.files[0]));
-            if (!loadedOnce) {
+            //if (!loadedOnce) {
                 videoEl = wavesurfer.backend.media;
                 videoEl.style.cssText = "";
                 //videoWrapper.insertBefore(videoEl, titlesWrapper);
@@ -302,8 +318,8 @@
                 videoEl.addEventListener("click", () => {
                     playPause();
                 })
-            }
-            loadedOnce = true;
+            //}
+            //loadedOnce = true;
         });
         titlesSelectEl.addEventListener("change", () => {
             let reader = new FileReader();
