@@ -215,7 +215,7 @@
                 btn.addEventListener("click", () => {
                     wavesurfer.setCurrentTime(line.to);
                 });
-                let itemContentEl = listEl.appendChild(document.createElement("div"));
+                let itemContentEl = itemEl.appendChild(document.createElement("div"));
                 itemContentEl.className = "item-content";
                 itemContentEl.textContent = line.content;
                 btn = itemEl.appendChild(document.createElement("button"));
