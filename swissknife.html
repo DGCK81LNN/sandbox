@@ -56,7 +56,7 @@
           code point escape text
         </button>
         <button onclick="let _td=JSON.stringify(text.value);codebox.value=`text.value=${_td};\ncodebox.value=codebox.value.slice(16+codebox.value.indexOf(\&quot;\\\&quot;SoulLS dump\\\&quot;;\&quot;));throw&quot;SoulLS dump&quot;;\n\n${codebox.value}`">
-          dump code & text
+          dump code &amp; text
         </button>
       </div>
       <div>
@@ -90,7 +90,7 @@
         <button onclick="out.value=text.value.replace(/&amp;/g,'&amp;amp;').replace(/'/g,'&amp;apos;')">
           escape &amp;'
         </button>
-        <button onclick="let s='';for(let c of text.value){let d=c.codePointAt(0);s+=d<0x80?c:c in HTML_ENTITIES_NONASCII?`&${HTML_ENTITIES_NONASCII[c]};`:`&#${d};`}out.value=s">
+        <button onclick="let s='';for(let c of text.value){let d=c.codePointAt(0);s+=d<0x80?c:c in HTML_ENTITIES_NONASCII?`&amp;${HTML_ENTITIES_NONASCII[c]};`:`&amp;#${d};`}out.value=s">
           encode nonascii
         </button>
         <button onclick="let e=document.createElement(&quot;div&quot;);out.value=text.value.replace(/&amp;\w[\d\w]+;?|&amp;#\d+;?|&amp;#x[\dA-Fa-f]+;?/g,c=>(e.innerHTML=c,e.textContent))">
@@ -130,6 +130,7 @@
     </div>
     <input type="file" id="file" style="display:none">
     <script>
+      getElementsLNN();
       var codebox = {
         get value() {
           return codeCm.getValue();
