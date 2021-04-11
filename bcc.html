@@ -59,6 +59,10 @@
             display: inline-block;
         }
 
+        #waveEl {
+            width: 100%;
+        }
+
         @media screen and (min-width: 800px) {
             #videoWrapper {
                 float: left;
@@ -66,11 +70,11 @@
         }
     </style>
     <script src="https://dgck81lnn.github.io/js/utils.js"></script>
-    <script src="https://unpkg.com/wavesurfer.js"></script>
 </head>
 
 <body>
     <div id="videoWrapper">
+        <video id="videoEl"></video>
         <div id="titlesWrapper"><span id="titlesEl"></span></div>
     </div>
 
@@ -97,267 +101,20 @@
                 <li><button id="deleteLineBtn" onclick="deleteLine()">删除当前</button>
             </div>
         </menu>
+        <p>
+            <span id="statusEl">就绪</span>
+            <progress id="statusProgressEl" hidden></progress>
+        </p>
     </fieldset>
 
-    <div id="wavesurferEl"></div>
+    <canvas id="waveEl" height=200></canvas>
 
     <fieldset>
         <legend>字幕</legend>
         <ol id="listEl"></ol>
     </fieldset>
 
-    <script>
-        var wavesurfer = WaveSurfer.create({
-            container: "#wavesurferEl",
-            scrollParent: true,
-            backend: "MediaElement",
-            mediaType: "video",
-            minPxPerSec: 160,
-        });
-
-        /** @type {HTMLDivElement} */
-        var videoWrapper;
-        /** @type {HTMLVideoElement} */
-        var videoEl;
-        /** @type {HTMLDivElement} */
-        var titlesWrapper;
-        /** @type {HTMLDivElement} */
-        var titlesEl;
-        /** @type {HTMLButtonElement} */
-        var openVideoBtn;
-        /** @type {HTMLButtonElement} */
-        var openTitlesBtn;
-        /** @type {HTMLButtonElement} */
-        var saveTitlesBtn;
-        /** @type {HTMLButtonElement} */
-        var skipBackBtn;
-        /** @type {HTMLButtonElement} */
-        var playPauseBtn;
-        /** @type {HTMLButtonElement} */
-        var skipFwdBtn;
-        /** @type {HTMLInputElement} */
-        var fromEl;
-        /** @type {HTMLInputElement} */
-        var toEl;
-        /** @type {HTMLInputElement} */
-        var scrollEl;
-        /** @type {HTMLOListElement} */
-        var listEl;
-        getElementsLNN();
-
-        var utf8Encoder = new TextEncoder();
-        var videoSelectEl = document.createElement("input"),
-            titlesSelectEl = document.createElement("input");
-        videoSelectEl.type = "file";
-        titlesSelectEl.type = "file";
-        /** @type {{
-         *   font_size: 0.4,
-         *   font_color: "#FFFFFF",
-         *   background_alpha: 0.5,
-         *   background_color: "#9C27B0",
-         *   Stroke: "none",
-         *   body: {
-         *     from: number,
-         *     to: number,
-         *     content: string,
-         *     location: 2,
-         *   }[],
-         * }} */
-        var titles = {
-            font_size: 0.4,
-            font_color: "#FFFFFF",
-            background_alpha: 0.5,
-            background_color: "#9C27B0",
-            Stroke: "none",
-            body: []
-        };
-        var currentLineIndex = null;
-        //var loadedOnce = false;
-
-        function update() {
-            requestAnimationFrame(update);
-            let s = "";
-            let newIndex = null;
-            let time = wavesurfer.getCurrentTime();
-            if (titles) {
-                for (let i in titles.body) {
-                    let line = titles.body[i];
-                    if (time >= line.from && time < line.to) {
-                        s = line.content;
-                        newIndex = i;
-                        break;
-                    }
-                }
-            }
-            titlesEl.textContent = s;
-            if (currentLineIndex === newIndex)
-                return;
-            if (currentLineIndex !== null)
-                listEl.children[currentLineIndex].className = "";
-            if (newIndex !== null) {
-                listEl.children[newIndex].className = "current-line";
-                listEl.scrollTop = listEl.children[newIndex].offsetTop - 100;
-            }
-            currentLineIndex = newIndex;
-        }
-
-        function updateList() {
-            [...listEl.children].forEach(c => c.remove());
-            titles.body.forEach((line, i) => {
-                let itemEl = listEl.appendChild(document.createElement("li"));
-                let btn = itemEl.appendChild(document.createElement("button"));
-                btn.textContent = line.from;
-                btn.addEventListener("click", () => {
-                    wavesurfer.setCurrentTime(line.from);
-                });
-                btn = itemEl.appendChild(document.createElement("button"));
-                btn.textContent = line.to;
-                btn.addEventListener("click", () => {
-                    wavesurfer.setCurrentTime(line.to);
-                });
-                let itemContentEl = itemEl.appendChild(document.createElement("div"));
-                itemContentEl.className = "item-content";
-                itemContentEl.textContent = line.content;
-                btn = itemEl.appendChild(document.createElement("button"));
-                btn.textContent = "删除并重新编辑";
-                btn.addEventListener("click", () => {
-                    fromEl.value = line.from;
-                    toEl.value = line.to;
-                    contentEl.value = line.content;
-                    titles.body.splice(i, 1);
-                    updateList();
-                });
-            });
-        }
-
-        function openVideo() {
-            videoSelectEl.click();
-        };
-
-        function openTitles() {
-            titlesSelectEl.click();
-            updateList();
-        };
-
-        function saveTitles() {
-            let filename = prompt("文件名", "titles.bcc");
-            if (!filename) return;
-            let a = document.createElement("a");
-            a.href = URL.createObjectURL(new Blob([utf8Encoder.encode(JSON.stringify(titles)).buffer]));
-            a.download = filename;
-            a.click();
-        };
-
-        function skipBack() {
-            wavesurfer.skipBackward();
-        };
-
-        function playPause() {
-            wavesurfer.playPause();
-        };
-
-        function skipFwd() {
-            wavesurfer.skipForward();
-        };
-
-        function setFrom() {
-            fromEl.value = wavesurfer.getCurrentTime().toFixed(6);
-        }
-
-        function setTo() {
-            toEl.value = wavesurfer.getCurrentTime().toFixed(6);
-        }
-
-        function insertLine() {
-            let from = Number(fromEl.value),
-                to = Number(toEl.value);
-            if (isNaN(from) || isNaN(to) || from >= to)
-                return;
-            let content = contentEl.value;
-            fromEl.value = toEl.value = contentEl.value = "";
-            titles.body.push({
-                from,
-                to,
-                content,
-                location: 2,
-            });
-            titles.body.sort((a, b) => a.from - b.from);
-            updateList();
-        }
-
-        function deleteLine() {
-            if (currentLineIndex === null)
-                return;
-            titles.body.splice(currentLineIndex, 1);
-            updateList();
-        }
-
-        videoSelectEl.addEventListener("change", () => {
-            wavesurfer.load(window.URL.createObjectURL(videoSelectEl.files[0]));
-            //if (!loadedOnce) {
-                videoEl = wavesurfer.backend.media;
-                videoEl.style.cssText = "";
-                //videoWrapper.insertBefore(videoEl, titlesWrapper);
-                videoEl.addEventListener("durationchange", () => {
-                    scrollEl.max = videoEl.duration;
-                });
-                videoEl.addEventListener("timeupdate", () => {
-                    let time = videoEl.currentTime;
-                    scrollEl.value = time;
-                    currTimeEl.textContent =
-                        time >= 3600 ?
-                        `${Math.floor(time / 3600)}:${String(Math.floor(time / 60) % 60).padStart(2, "0")}:${String(Math.floor(time % 60)).padStart(2, "0")}.${String(Math.floor(time % 1 * 1000)).padStart(3, "0")}` :
-                        `${Math.floor(time / 60)}:${String(Math.floor(time % 60)).padStart(2, "0")}.${String(Math.floor(time % 1 * 1000)).padStart(3, "0")}`;
-                });
-                videoEl.addEventListener("playing", () => {
-                    scrollEl.hidden = true;
-                });
-                videoEl.addEventListener("pause", () => {
-                    scrollEl.hidden = false;
-                });
-                videoEl.addEventListener("click", () => {
-                    playPause();
-                })
-            //}
-            //loadedOnce = true;
-        });
-        titlesSelectEl.addEventListener("change", () => {
-            let reader = new FileReader();
-            reader.addEventListener("load", () => {
-                titles = JSON.parse(reader.result);
-                updateList();
-            });
-            reader.readAsText(titlesSelectEl.files[0]);
-        });
-        scrollEl.addEventListener("change", () => {
-            wavesurfer.setCurrentTime(Number(scrollEl.value));
-        });
-        document.body.addEventListener("keydown", event => {
-            let preventDefault = true;
-            let doDisableArrowKeys =
-                event.target instanceof HTMLInputElement && ![
-                    "button", "checkbox", "color", "file", "hidden", "image", "radio", "reset", "submit"
-                ].includes(event.target.type.toLowerCase()) ||
-                event.target instanceof HTMLTextAreaElement;
-            //console.log(event);
-            if (event.target === document.body && event.key === " ")
-                playPause();
-            else if (!doDisableArrowKeys && event.key === "ArrowLeft")
-                skipBack();
-            else if (!doDisableArrowKeys && event.key === "ArrowRight")
-                skipFwd();
-            else if (event.altKey && event.shiftKey && event.key === "KeyO")
-                openTitles();
-            else if (event.altKey && event.shiftKey && event.key === "KeyS")
-                saveTitles();
-            else if (event.ctrlKey !== event.shiftKey && event.key === "Enter")
-                insertLine();
-            else preventDefault = false;
-            if (preventDefault) event.preventDefault();
-        })
-
-        update();
-    </script>
+    <script src="bcc.js"></script>
 </body>
 
 </html>
