@@ -9,21 +9,22 @@ if (typeof Blob.prototype.arrayBuffer !== "function") {
         });
     };
 }
-// BaseAudioContext.prototype.decodeAudioData() (returning Promise) polyfill
-if (BaseAudioContext.prototype.decodeAudioData.length > 1) {
-    var old = BaseAudioContext.prototype.decodeAudioData;
-    BaseAudioContext.prototype.decodeAudioData = function (arrayBuffer, successCallback, errorCallback) {
+
+if (typeof AudioContext !== "function")
+    var AudioContext = this.webkitAudioContext;
+// AudioContext.prototype.decodeAudioData() (returning Promise) polyfill
+if (AudioContext.prototype.decodeAudioData.length > 1) {
+    var old = AudioContext.prototype.decodeAudioData;
+    AudioContext.prototype.decodeAudioData = function (arrayBuffer, successCallback, errorCallback) {
         if (!successCallback)
             return new Promise((resolve, reject) => old.call(this, arrayBuffer, resolve, reject));
         else
             return old.call(this, arrayBuffer, successCallback, errorCallback);
     }
 }
-if (typeof AudioContext !== "function")
-    var AudioContext = this.webkitAudioContext;
 
-const wavePixelsPerSecond = 160;
-const waveVerticalScale = 0.8;
+const WAVE_PIXELS_PER_SECOND = 160;
+const WAVE_VERTICAL_SCALE = 0.8;
 
 /** @type {HTMLDivElement} */      var videoWrapper;
 /** @type {HTMLVideoElement} */    var videoEl;
@@ -110,9 +111,9 @@ function update() {
     var height = waveEl.height;
     waveCtx.fillStyle = "#808080";
     waveCtx.fillRect(0, height >> 1, width, 1);
-    waveCtx.setTransform(1, 0, 0, -height * waveVerticalScale >> 1, 0, height >> 1);
+    waveCtx.setTransform(1, 0, 0, -height * WAVE_VERTICAL_SCALE >> 1, 0, height >> 1);
     if (peakDataMin) {
-        var i = (0 | videoEl.currentTime * wavePixelsPerSecond) - (width >> 1); // 当前列在peakData中的索引
+        var i = (0 | videoEl.currentTime * WAVE_PIXELS_PER_SECOND) - (width >> 1); // 当前列在peakData中的索引
         var x = 0; // 当前列在画布中的横坐标
         if (i < 0) x = -i, i = 0;
         for (; x < width; ++i, ++x) {
@@ -121,7 +122,7 @@ function update() {
     }
     waveCtx.fillStyle = "#ff0000";
     waveCtx.setTransform(1, 0, 0, 1, 0, 0);
-    waveCtx.fillRect((width >> 1), 0, 1, height);
+    waveCtx.fillRect((width >> 1) - 1, 0, 3, height);
 }
 
 function updateList() {
@@ -173,8 +174,8 @@ async function generatePeakData(blob) {
     for (let channelI = 0; channelI < channelCount; ++channelI)
         channels.push(audioBuffer.getChannelData(channelI));
 
-    var peakDataLength = Math.ceil(audioBuffer.duration * wavePixelsPerSecond),
-        delta = audioBuffer.sampleRate / wavePixelsPerSecond;
+    var peakDataLength = Math.ceil(audioBuffer.duration * WAVE_PIXELS_PER_SECOND),
+        delta = Math.ceil(audioBuffer.sampleRate / WAVE_PIXELS_PER_SECOND);
     peakDataMin = new Float32Array(peakDataLength);
     peakDataMax = new Float32Array(peakDataLength);
     // performance.mark("generatePeakData-working");
@@ -193,7 +194,7 @@ async function generatePeakData(blob) {
         if (!(peakDataI & 255)) {
             // performance.mark("generatePeakData-break");
             // performance.measure("generatePeakData", "generatePeakData-working", "generatePeakData-break");
-            
+
             await new Promise(resolve => setTimeout(resolve));
             // performance.mark("generatePeakData-working");
         }
@@ -259,6 +260,28 @@ function deleteLine() {
     updateList();
 }
 
+document.body.addEventListener("keydown", event => {
+    let preventDefault = true;
+    let doDisableArrowKeys =
+        event.target instanceof HTMLInputElement && ![
+            "button", "checkbox", "color", "file", "hidden", "image", "radio", "reset", "submit"
+        ].includes(event.target.type.toLowerCase()) ||
+        event.target instanceof HTMLTextAreaElement;
+    if (event.target === document.body && event.key === " ")
+        playPause();
+    else if (!doDisableArrowKeys && event.key === "ArrowLeft")
+        skipBack();
+    else if (!doDisableArrowKeys && event.key === "ArrowRight")
+        skipFwd();
+    else if (event.altKey && event.shiftKey && event.key === "KeyO")
+        openTitles();
+    else if (event.altKey && event.shiftKey && event.key === "KeyS")
+        saveTitles();
+    else if (event.ctrlKey !== event.shiftKey && event.key === "Enter")
+        insertLine();
+    else preventDefault = false;
+    if (preventDefault) event.preventDefault();
+})
 videoEl.addEventListener("durationchange", () => {
     scrollEl.max = videoEl.duration;
 });
@@ -298,27 +321,38 @@ titlesSelectEl.addEventListener("change", () => {
 scrollEl.addEventListener("change", () => {
     videoEl.currentTime = Number(scrollEl.value);
 });
-document.body.addEventListener("keydown", event => {
-    let preventDefault = true;
-    let doDisableArrowKeys =
-        event.target instanceof HTMLInputElement && ![
-            "button", "checkbox", "color", "file", "hidden", "image", "radio", "reset", "submit"
-        ].includes(event.target.type.toLowerCase()) ||
-        event.target instanceof HTMLTextAreaElement;
-    if (event.target === document.body && event.key === " ")
-        playPause();
-    else if (!doDisableArrowKeys && event.key === "ArrowLeft")
-        skipBack();
-    else if (!doDisableArrowKeys && event.key === "ArrowRight")
-        skipFwd();
-    else if (event.altKey && event.shiftKey && event.key === "KeyO")
-        openTitles();
-    else if (event.altKey && event.shiftKey && event.key === "KeyS")
-        saveTitles();
-    else if (event.ctrlKey !== event.shiftKey && event.key === "Enter")
-        insertLine();
-    else preventDefault = false;
-    if (preventDefault) event.preventDefault();
-})
+{
+    var waveScrolling = false,
+        waveScrollInitialPos = NaN,
+        waveScrollInitialValue = NaN;
+    let mouseDown = event => {
+        videoEl.pause();
+        waveScrolling = true;
+        waveScrollInitialPos = event.pageX;
+        waveScrollInitialValue = videoEl.currentTime;
+        event.preventDefault();
+    };
+    let mouseMove = event => {
+        if (!waveScrolling) return;
+        var time = waveScrollInitialValue + (waveScrollInitialPos - event.pageX) / WAVE_PIXELS_PER_SECOND;
+        if (time < 0) time = 0;
+        if (time > videoEl.duration) time = videoEl.duration;
+        videoEl.currentTime = time;
+        event.preventDefault();
+    }
+    let mouseUp = event => {
+        waveScrolling = false;
+        event.preventDefault();
+    }
+    waveEl.addEventListener("mousedown", mouseDown);
+    waveEl.addEventListener("mousemove", mouseMove);
+    window.addEventListener("mouseup", mouseUp);
+    waveEl.addEventListener("touchstart", mouseDown);
+    waveEl.addEventListener("touchmove", mouseMove);
+    window.addEventListener("touchend", mouseUp);
+    waveEl.addEventListener("touchcancel", () => {
+        videoEl.currentTime = waveScrollInitialValue;
+    });
+}
 
 update();
