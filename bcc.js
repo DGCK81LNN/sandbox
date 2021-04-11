@@ -330,7 +330,7 @@ scrollEl.addEventListener("change", () => {
         waveScrolling = true;
         waveScrollInitialPos = event.pageX;
         waveScrollInitialValue = videoEl.currentTime;
-        event.preventDefault();
+        if (!event instanceof TouchEvent) event.preventDefault();
     };
     let mouseMove = event => {
         if (!waveScrolling) return;
@@ -338,11 +338,11 @@ scrollEl.addEventListener("change", () => {
         if (time < 0) time = 0;
         if (time > videoEl.duration) time = videoEl.duration;
         videoEl.currentTime = time;
-        event.preventDefault();
+        if (!event instanceof TouchEvent) event.preventDefault();
     }
     let mouseUp = event => {
         waveScrolling = false;
-        event.preventDefault();
+        if (!event instanceof TouchEvent) event.preventDefault();
     }
     waveEl.addEventListener("mousedown", mouseDown);
     waveEl.addEventListener("mousemove", mouseMove);
