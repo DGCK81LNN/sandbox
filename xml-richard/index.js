@@ -37,7 +37,7 @@ function init() {
   const sportsButton = document.getElementById("selectvolume-sports");
 
   resumeButton.parentElement.hidden = !data.restoreVolume;
-  resumeButton.onclick = () => { run(data.restoreVolume) };
+  resumeButton.onclick = () => { run(data.restoreVolume, data.restoreData) };
   epidemicButton.onclick = () => { run('epidemic') };
   seniorButton.disabled = sportsButton.disabled = !data.volumesUnlocked;
   seniorButton.onclick = () => { run('senior') };
@@ -55,6 +55,7 @@ async function run(volumeId, restoreData = []) {
 
   try {
     data.restoreVolume = volumeId;
+    data.restoreData = restoreData;
     volume = doc.getElementById(volumeId);
 
     while (outEl.firstChild) outEl.removeChild(outEl.firstChild);
@@ -126,7 +127,6 @@ async function iterate(element) {
 function execJs(js) {
   try {
     let result = new Function("$", "__js", `with ($) { return eval(__js) }`)(vars, js);
-    save();
     return result;
   } catch (err) {
     console.error(
