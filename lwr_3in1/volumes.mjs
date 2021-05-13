@@ -454,7 +454,7 @@ export async function epidemic({ data, el, p, choose }) {
     function dScore(delta, raw = false) {
         if (!raw) delta *= data.loveBonus
         score += delta
-        voiceover(`${delta > 0 ? "+" : ""}${delta.toFixed(2)}<br>SCORE:` + score.toFixed(2).padStart(7, ' '))
+        voiceover(`${delta > 0 ? "+" : ""}${delta.toFixed(2)}<br>SCORE:` + score.toFixed(2))
     }
     function voiceover(s) {
         p(`<i>${s}</i>`)
