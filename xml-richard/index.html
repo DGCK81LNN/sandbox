@@ -9,6 +9,9 @@
     #main {
       margin-bottom: 200px;
     }
+    #selectvolume li {
+      margin: 1rem 0;
+    }
     .choose-choices {
       -webkit-appearance: none;
       display: flex;
@@ -25,7 +28,15 @@
 </head>
 
 <body>
-  <main id="main"></main>
+  <main id="main">
+    <h1><cite lang=en>Love with Richard</cite> <small>3 in 1</small></h1>
+    <ul id=selectvolume>
+      <li><button id=selectvolume-resume>继续上次</button>
+      <li><button id=selectvolume-epidemic>第一部 <cite lang=en>Love with Richard under Epidemic</cite></button>
+      <li><button id=selectvolume-senior disabled>第二部 <cite lang=en>Love with Richard to Senior</cite></button>
+      <li><button id=selectvolume-sports disabled>第三部 <cite lang=en>Love with Richard: 930 Sports Meeting</cite></button> - 即将到来...
+    </ul>
+  </main>
   <script src="index.js"></script>
 </body>
 
