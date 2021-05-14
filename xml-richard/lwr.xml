@@ -1165,5 +1165,11 @@
   </volume>
   <volume id="sports">
     <title><s lang="en">Love with Richard: 9/30 Sports Meet</s></title>
+
+    <js>
+      <![CDATA[
+      throw "Not implemented"
+      ]]>
+    </js>
   </volume>
 </richard>
