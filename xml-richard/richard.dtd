@@ -1,0 +1,38 @@
+<!ELEMENT richard (volume*)>
+<!ATTLIST richard xmlns:html CDATA #FIXED "http://www.w3.org/1999/xhtml">
+
+<!ELEMENT volume (title, (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*)>
+<!ATTLIST volume id ID #REQUIRED>
+
+<!ELEMENT title (#PCDATA|s)*>
+<!ELEMENT p (#PCDATA|s)*>
+<!ELEMENT h (#PCDATA|s)*>
+<!ELEMENT i (#PCDATA|s)*>
+
+<!ELEMENT s (#PCDATA|s)*>
+<!ATTLIST s is (b|i|u|em|strong) #IMPLIED>
+<!ATTLIST s lang CDATA #IMPLIED>
+<!ATTLIST s class CDATA #IMPLIED>
+<!ATTLIST s style CDATA #IMPLIED>
+
+<!ELEMENT a EMPTY>
+<!ATTLIST a js CDATA #IMPLIED>
+<!ELEMENT js (#PCDATA)>
+
+<!ELEMENT separator EMPTY>
+<!ELEMENT pause EMPTY>
+<!ELEMENT choose (choice*)>
+<!ELEMENT choice (#PCDATA)>
+
+<!ELEMENT if (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ATTLIST if js CDATA #REQUIRED>
+<!ELEMENT elif (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ATTLIST elif js CDATA #REQUIRED>
+<!ELEMENT else (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+
+<!ELEMENT case (when+)>
+<!ELEMENT when (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ATTLIST when js CDATA #REQUIRED>
+
+<!ELEMENT call EMPTY>
+<!ATTLIST call target NMTOKEN #REQUIRED>
