@@ -20,7 +20,7 @@
           console.warn(`dScore(): 分值 ${delta} 不是整数，已取整为 ${delta | 0}`)
         delta |= 0
         score += delta
-        outEl.appendChild(document.createElement("p"))
+        mainEl.appendChild(document.createElement("p"))
           .appendChild(document.createElement("i"))
           .textContent = `${delta < 0 ? delta : '+' + delta}, SCORE: ${$.score}`
       }

@@ -1,14 +1,22 @@
-const xhr = new XMLHttpRequest();
-xhr.open("get", "lwr.xml");
-xhr.overrideMimeType("application/xml");
-xhr.onload = init;
-xhr.send();
+/*
+ * 变量命名规则说明
+ * 
+ * 以`El`结尾：HTML元素
+ * 以`Xel`结尾：XML剧情树中的元素
+ */
 
-/** @type {HTMLElement} */
-var outEl;
-/** @type {XMLDocument} */
-var doc;
 /**
+ * 输出容器
+ * @type {HTMLElement}
+ */
+var mainEl = document.getElementById("main");
+/**
+ * 剧情树
+ * @type {XMLDocument}
+ */
+var xml;
+/**
+ * 需要存储的数据
  * @typedef {{
  *   epidemicRecord: number[],
  *   volumesUnlocked: boolean,
@@ -23,60 +31,104 @@ var data = {
   restoreVolume: "",
   restoreData: [],
 };
-/** 内嵌Js的变量“作用域” */
+/**
+ * 内嵌Js的变量“作用域”
+ */
 var vars = { data };
-/** @type {Element} */
-var volume;
-var restoreIndex = 0;
+/**
+ * 当前运行的`volume`
+ * @type {Element}
+ */
+var volumeXel;
 
 try {
   Object.assign(data, JSON.parse(localStorage["soulSandboxLoveWithRichardData"]));
 } catch (_) { console.log("恢复数据失败，已忽略\n", _) }
 
+
+// 请求剧情树
+{
+  clearMainEl();
+  mainEl.innerHTML = "<p>正在加载数据……<span id='progress' role='status'>正在等待连接</span></p>";
+  let progressEl = document.getElementById("progress");
+  const xhr = new XMLHttpRequest();
+  xhr.open("get", "lwr.xml");
+  xhr.overrideMimeType("application/xml");
+  xhr.addEventListener("progress", event => {
+    progressEl.textContent = `${(event.loaded / 1024).toFixed(1)}KB / ${event.lengthComputable ? (event.total / 1024).toFixed(1) : '?'}KB`;
+  });
+  xhr.addEventListener("load", () => {
+    xml = xhr.responseXML;
+    console.log(xml);
+    init();
+  });
+  xhr.addEventListener("error", () => {
+    mainEl.innerHTML = "<p>数据加载失败！</p>"
+  });
+  xhr.send();
+}
+
+const volumeIds = ['epidemic', 'senior', 'sports'];
+const volumeNames = [
+  "Love with Richard under Epidemic",
+  "Love with Richard to Senior",
+  "Love with Richard: 9/30 Sports Meet"
+];
 function init() {
-  outEl = document.getElementById("main");
-  doc = xhr.responseXML;
-  console.log(doc);
-
-  const resumeButton = document.getElementById("selectvolume-resume");
-  const epidemicButton = document.getElementById("selectvolume-epidemic");
-  const seniorButton = document.getElementById("selectvolume-senior");
-  const sportsButton = document.getElementById("selectvolume-sports");
-
-  resumeButton.parentElement.hidden = !data.restoreVolume;
-  resumeButton.onclick = () => { run(data.restoreVolume, data.restoreData) };
-  epidemicButton.onclick = () => { run('epidemic') };
-  seniorButton.disabled = sportsButton.disabled = !data.volumesUnlocked;
-  seniorButton.onclick = () => { run('senior') };
-  sportsButton.onclick = () => { run('sports') };
+  mainEl.innerHTML = '<h1 lang=en>Love with Richard <small>3 in 1</small></h1>';
+  const ulEl = mainEl.appendChild(document.createElement("ol"));
+  for (let i = 0; i < 3; ++i) {
+    const volumeId = volumeIds[i], volumeName = volumeNames[i];
+    const itemEl = ulEl.appendChild(document.createElement("li")).appendChild(document.createElement("p"));
+    const nameEl = itemEl.appendChild(document.createElement("cite"));
+    nameEl.textContent = volumeName;
+    nameEl.setAttribute("lang", "en");
+    itemEl.appendChild(document.createTextNode(" "));
+    const startEl = itemEl.appendChild(document.createElement("button"));
+    startEl.textContent = "开始";
+    startEl.onclick = () => { run(volumeId) };
+    itemEl.appendChild(document.createTextNode(" "));
+    if (volumeId == data.restoreVolume) {
+      const resumeEl = itemEl.appendChild(document.createElement("button"));
+      resumeEl.textContent = "继续上次";
+      resumeEl.onclick = () => { run(volumeId, data.restoreData) };
+    }
+  }
 }
 
 /**
- * 运行richard剧情文件
+ * 清空`mainEl`的内容
+ */
+function clearMainEl() {
+  while (mainEl.firstChild) mainEl.removeChild(mainEl.firstChild);
+}
+
+/**
+ * 运行剧情树的一个`volume`
  * @param {string} volumeId 要运行的`volume`的`id`
  * @param {number[]} restoreData 恢复之前进度
  */
 async function run(volumeId, restoreData = []) {
   restoreData = restoreData.slice(0);
+  clearMainEl();
 
   try {
     data.restoreVolume = volumeId;
     data.restoreData = restoreData;
-    volume = doc.getElementById(volumeId);
+    volumeXel = xml.getElementById(volumeId);
 
-    while (outEl.firstChild) outEl.removeChild(outEl.firstChild);
-    const titleEl = doc.evaluate("title", volume).iterateNext();
-    outEl.appendChild(importContent(titleEl, "h1"));
+    const titleXel = xml.evaluate("title", volumeXel).iterateNext();
+    mainEl.appendChild(importContent(titleXel, "h1"));
 
-    await iterate(volume, outEl);
+    await iterate(volumeXel, mainEl);
 
     data.restoreVolume = "";
     data.restoreData = [];
     save();
 
-    location.reload();
+    init();
   } catch (err) {
-    outEl.appendChild(document.createElement("p"))
+    mainEl.appendChild(document.createElement("p"))
       .appendChild(document.createElement("i"))
       .textContent = "运行出错！" + err;
     throw err;
@@ -84,67 +136,67 @@ async function run(volumeId, restoreData = []) {
 }
 
 /**
- * 运行一个`richard`节点
- * @param {Element} element 
+ * 运行剧情树的一个节点
+ * @param {Element} xel 
  */
-async function iterate(element, outEl) {
+async function iterate(xel, el) {
   var skipElseBlocks = false;
-  childLoop: for (let child of element.children) {
-    switch (child.nodeName) {
+  childLoop: for (let childXel of xel.children) {
+    switch (childXel.nodeName) {
       case "p":
-        outEl.appendChild(importContent(child, "p"));
+        el.appendChild(importContent(childXel, "p"));
         break;
       case "h":
-        outEl.appendChild(importContent(child, "h2"));
+        el.appendChild(importContent(childXel, "h2"));
       case "i":
-        outEl.appendChild(document.createElement("p"))
-          .appendChild(importContent(child, "i"));
+        el.appendChild(document.createElement("p"))
+          .appendChild(importContent(childXel, "i"));
         break;
       case "a":
-        await execJs(child.getAttribute("js"));
+        await execJs(childXel.getAttribute("js"));
         break;
       case "b": {
-        let newOutEl = document.createElement(child.hasAttribute("is") ? child.getAttribute("is") : "div");
-        if (child.hasAttribute("lang")) newOutEl.setAttribute("lang", child.getAttribute("lang"));
-        if (child.hasAttribute("class")) newOutEl.setAttribute("class", child.getAttribute("class"));
-        if (child.hasAttribute("style")) newOutEl.setAttribute("style", child.getAttribute("style"));
-        await iterate(child, outEl.appendChild(newOutEl));
+        let childEl = document.createElement(childXel.hasAttribute("is") ? childXel.getAttribute("is") : "div");
+        if (childXel.hasAttribute("lang")) childEl.setAttribute("lang", childXel.getAttribute("lang"));
+        if (childXel.hasAttribute("class")) childEl.setAttribute("class", childXel.getAttribute("class"));
+        if (childXel.hasAttribute("style")) childEl.setAttribute("style", childXel.getAttribute("style"));
+        await iterate(childXel, el.appendChild(childEl));
         break;
       }
       case "js":
-        await execJs(child.textContent);
+        await execJs(childXel.textContent);
         break;
       case "separator":
-        outEl.appendChild(document.createElement("hr"));
+        el.appendChild(document.createElement("hr"));
         break;
       case "pause":
         await pause();
         break;
       case "choose":
-        vars._ = await choose(child);
+        vars._ = await choose(childXel);
         break;
       case "if":
-        if (skipElseBlocks = await execJs(child.getAttribute("js")))
-          await iterate(child, outEl);
+        if (skipElseBlocks = await execJs(childXel.getAttribute("js")))
+          await iterate(childXel, el);
         break;
       case "elif":
-        if (!skipElseBlocks && (skipElseBlocks = await execJs(child.getAttribute("js"))))
-          await iterate(child, outEl);
+        if (!skipElseBlocks && (skipElseBlocks = await execJs(childXel.getAttribute("js"))))
+          await iterate(childXel, el);
         break;
       case "else":
         if (!skipElseBlocks)
-          await iterate(child, outEl);
+          await iterate(childXel, el);
         break;
       case "case":
-        for (let when of child.children) {
+        for (let when of childXel.children) {
           if (when.nodeName === "else" ||
             when.nodeName === "when" && await execJs(when.getAttribute("js"))) {
-            await iterate(when, outEl);
+            await iterate(when, el);
             continue childLoop;
           }
         }
         // 没有找到匹配的<when>，抛出错误
-        console.error("iterate(): <case>块中所有<when>都不匹配，<case>元素：\n", child);
+        console.error("iterate(): <case>块中所有<when>都不匹配，<case>元素：\n", childXel);
         throw new Error("iterate(): <case>块中所有<when>都不匹配");
       case "call":
       // TODO: Implement expansive modules
@@ -173,17 +225,19 @@ function execJs(js) {
 
 /** `choose()` 当前互动选择题的序号（做唯一标识用） */
 var chooseIndex = 1;
+/** 遍历`data.restoreData`的索引 */
+var restoreIndex = 0;
 /**
  * 显示互动选择
- * @param {Element} choices 选项列表
+ * @param {Element} xel 选项节点
  * @returns {Promise<number>} 所选选项索引
  */
-function choose(choices) {
+function choose(xel) {
   /** 已选选项索引 */
   var chosenIndex = -1;
   const choicesName = "choose" + chooseIndex++;
 
-  const chooseEl = outEl.appendChild(document.createElement("fieldset"));
+  const chooseEl = mainEl.appendChild(document.createElement("fieldset"));
   chooseEl.className = "choose";
 
   const choicesEl = chooseEl.appendChild(document.createElement("div"));
@@ -195,7 +249,7 @@ function choose(choices) {
     chooseEl.disabled = true;
   }
 
-  [...choices.children].forEach((item, index) => {
+  [...xel.children].forEach((item, index) => {
     const itemId = `${choicesName}-choice${index}`;
     const itemEl = choicesEl.appendChild(document.createElement("div"));
     const radio = itemEl.appendChild(document.createElement("input"));
@@ -235,14 +289,14 @@ function choose(choices) {
  * @returns {Promise<void>}
  */
 function pause() {
-  outEl.appendChild(document.createElement("hr"));
+  mainEl.appendChild(document.createElement("hr"));
 
   if (restoreIndex < data.restoreData.length) {
     restoreIndex++;
     return Promise.resolve();
   }
 
-  const pauseEl = outEl.appendChild(document.createElement("div"));
+  const pauseEl = mainEl.appendChild(document.createElement("div"));
   const button = pauseEl.appendChild(document.createElement("button"));
   button.className = "pause";
   button.textContent = "继续";
@@ -268,19 +322,19 @@ function save() {
 
 /**
  * 导入一个元素内的文本
- * @param {Element} origNode
- * @param {string} destNodeName
+ * @param {Element} xel
+ * @param {string} elName
  */
-function importContent(origNode, destNodeName) {
-  var destNode = document.createElement(destNodeName);
-  if (origNode.hasAttribute("lang")) destNode.setAttribute("lang", origNode.getAttribute("lang"));
-  if (origNode.hasAttribute("class")) destNode.setAttribute("class", origNode.getAttribute("class"));
-  if (origNode.hasAttribute("style")) destNode.setAttribute("style", origNode.getAttribute("style"));
-  for (let child of origNode.childNodes) {
-    if (child instanceof Text)
-      destNode.appendChild(document.importNode(child));
-    else if (child instanceof Element)
-      destNode.appendChild(importContent(child, child.getAttribute("is") || "span"));
+function importContent(xel, elName) {
+  var el = document.createElement(elName);
+  if (xel.hasAttribute("lang")) el.setAttribute("lang", xel.getAttribute("lang"));
+  if (xel.hasAttribute("class")) el.setAttribute("class", xel.getAttribute("class"));
+  if (xel.hasAttribute("style")) el.setAttribute("style", xel.getAttribute("style"));
+  for (let childXel of xel.childNodes) {
+    if (childXel instanceof Text)
+      el.appendChild(document.importNode(childXel));
+    else if (childXel instanceof Element)
+      el.appendChild(importContent(childXel, childXel.getAttribute("is") || "span"));
   }
-  return destNode;
+  return el;
 }
