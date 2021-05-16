@@ -68,7 +68,7 @@ async function run(volumeId, restoreData = []) {
     const titleEl = doc.evaluate("title", volume).iterateNext();
     outEl.appendChild(importContent(titleEl, "h1"));
 
-    await iterate(volume);
+    await iterate(volume, outEl);
 
     data.restoreVolume = "";
     data.restoreData = [];
@@ -87,7 +87,7 @@ async function run(volumeId, restoreData = []) {
  * 运行一个`richard`节点
  * @param {Element} element 
  */
-async function iterate(element) {
+async function iterate(element, outEl) {
   var skipElseBlocks = false;
   childLoop: for (let child of element.children) {
     switch (child.nodeName) {
@@ -103,6 +103,14 @@ async function iterate(element) {
       case "a":
         await execJs(child.getAttribute("js"));
         break;
+      case "b": {
+        let newOutEl = document.createElement(child.hasAttribute("is") ? child.getAttribute("is") : "div");
+        if (child.hasAttribute("lang")) newOutEl.setAttribute("lang", child.getAttribute("lang"));
+        if (child.hasAttribute("class")) newOutEl.setAttribute("class", child.getAttribute("class"));
+        if (child.hasAttribute("style")) newOutEl.setAttribute("style", child.getAttribute("style"));
+        await iterate(child, outEl.appendChild(newOutEl));
+        break;
+      }
       case "js":
         await execJs(child.textContent);
         break;
@@ -117,21 +125,21 @@ async function iterate(element) {
         break;
       case "if":
         if (skipElseBlocks = await execJs(child.getAttribute("js")))
-          await iterate(child);
+          await iterate(child, outEl);
         break;
       case "elif":
         if (!skipElseBlocks && (skipElseBlocks = await execJs(child.getAttribute("js"))))
-          await iterate(child);
+          await iterate(child, outEl);
         break;
       case "else":
         if (!skipElseBlocks)
-          await iterate(child);
+          await iterate(child, outEl);
         break;
       case "case":
         for (let when of child.children) {
           if (when.nodeName === "else" ||
             when.nodeName === "when" && await execJs(when.getAttribute("js"))) {
-            await iterate(when);
+            await iterate(when, outEl);
             continue childLoop;
           }
         }
@@ -269,9 +277,9 @@ function importContent(origNode, destNodeName) {
   if (origNode.hasAttribute("class")) destNode.setAttribute("class", origNode.getAttribute("class"));
   if (origNode.hasAttribute("style")) destNode.setAttribute("style", origNode.getAttribute("style"));
   for (let child of origNode.childNodes) {
-    if (child.nodeType === Node.TEXT_NODE)
+    if (child instanceof Text)
       destNode.appendChild(document.importNode(child));
-    else
+    else if (child instanceof Element)
       destNode.appendChild(importContent(child, child.getAttribute("is") || "span"));
   }
   return destNode;

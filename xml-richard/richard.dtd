@@ -1,7 +1,7 @@
 <!ELEMENT richard (volume*)>
 <!ATTLIST richard xmlns:html CDATA #FIXED "http://www.w3.org/1999/xhtml">
 
-<!ELEMENT volume (title, (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*)>
+<!ELEMENT volume (title, (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*)>
 <!ATTLIST volume id ID #REQUIRED>
 
 <!ELEMENT title (#PCDATA|s)*>
@@ -9,8 +9,14 @@
 <!ELEMENT h (#PCDATA|s)*>
 <!ELEMENT i (#PCDATA|s)*>
 
+<!ELEMENT b (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ATTLIST b is (blockquote) #IMPLIED>
+<!ATTLIST b lang CDATA #IMPLIED>
+<!ATTLIST b class CDATA #IMPLIED>
+<!ATTLIST b style CDATA #IMPLIED>
+
 <!ELEMENT s (#PCDATA|s)*>
-<!ATTLIST s is (b|i|u|em|strong) #IMPLIED>
+<!ATTLIST s is (b|i|u|em|strong|cite|s) #IMPLIED>
 <!ATTLIST s lang CDATA #IMPLIED>
 <!ATTLIST s class CDATA #IMPLIED>
 <!ATTLIST s style CDATA #IMPLIED>
@@ -24,14 +30,14 @@
 <!ELEMENT choose (choice*)>
 <!ELEMENT choice (#PCDATA)>
 
-<!ELEMENT if (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ELEMENT if (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
 <!ATTLIST if js CDATA #REQUIRED>
-<!ELEMENT elif (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ELEMENT elif (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
 <!ATTLIST elif js CDATA #REQUIRED>
-<!ELEMENT else (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ELEMENT else (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
 
 <!ELEMENT case (when+)>
-<!ELEMENT when (p|h|i|a|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ELEMENT when (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
 <!ATTLIST when js CDATA #REQUIRED>
 
 <!ELEMENT call EMPTY>
