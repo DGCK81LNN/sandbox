@@ -77,7 +77,7 @@ const volumeNames = [
 function init() {
   mainEl.innerHTML = '<h1 lang=en>Love with Richard <small>3 in 1</small></h1>';
   const ulEl = mainEl.appendChild(document.createElement("ol"));
-  for (let i = 0; i < 3; ++i) {
+  for (let i = 0; i < volumeIds.length; ++i) {
     const volumeId = volumeIds[i], volumeName = volumeNames[i];
     const itemEl = ulEl.appendChild(document.createElement("li")).appendChild(document.createElement("p"));
     const nameEl = itemEl.appendChild(document.createElement("cite"));
@@ -86,6 +86,7 @@ function init() {
     itemEl.appendChild(document.createTextNode(" "));
     const startEl = itemEl.appendChild(document.createElement("button"));
     startEl.textContent = "开始";
+    startEl.disabled = i !== 0 && !data.volumesUnlocked;
     startEl.onclick = () => { run(volumeId) };
     itemEl.appendChild(document.createTextNode(" "));
     if (volumeId == data.restoreVolume) {
