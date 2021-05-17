@@ -2003,7 +2003,6 @@
         <p><s lang="en">Good End</s>：梦回428</p>
       </when>
       <when js="upNext = 'end5'">
-        <!-- lb+=0.04 -->
         <p>我走向Richard，拉住他的肩膀。他仿佛还沉浸在刚才的感觉中，没对我说什么。</p>
         <p>“和她怎么样了？”</p>
         <p>“她应该是与我和好了。她完全没有排斥我，还愿意把Sunny加油留作美好的回忆。旧牌子真的没白拿，它居然在此时派上了用场。”</p>
@@ -2027,7 +2026,6 @@
         <p><s lang="en">Bad End</s>：又一次与Sunny分别，或是永别</p>
       </when>
       <when js="upNext = 'end7'">
-        <!-- lb=1.25 -->
         <p>我走向Richard，拉住他的肩膀。他也摸了摸我，发现我还是像以往一样。这下，他陷入了沉思。</p>
         <p>“和她怎么样了？”</p>
         <p>“她应该是与我和好了。她完全没有排斥我，还愿意把Sunny加油留作美好的回忆。旧牌子真的没白拿，它居然在此时派上了用场。”</p>
@@ -2072,5 +2070,16 @@
     </case>
 
     <pause />
+    <js>
+      <![CDATA[
+      if (upNext === 'end7')
+        data.epidemicRecord[0] = data.epidemicRecord[1] = data.epidemicRecord[2] = data.epidemicRecord[3] = 1
+      else if (upNext === 'end5') {
+        data.epidemicRecord[0] = data.epidemicRecord[1] = 1
+        if (data.epidemicRecord[2] === -1) data.epidemicRecord[2] = 0
+        if (data.epidemicRecord[3] === -1) data.epidemicRecord[3] = 0
+      }
+      ]]>
+    </js>
   </volume>
 </richard>
