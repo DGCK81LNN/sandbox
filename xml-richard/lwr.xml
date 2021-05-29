@@ -568,7 +568,7 @@
       } else {
         data.epidemicRecord.push(-1)
       }
-      data.volumesUnlocked = score >= 50
+      data.volumesUnlocked = score >= 5000
       ]]>
     </js>
   </volume>
