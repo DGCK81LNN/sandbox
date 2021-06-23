@@ -76,7 +76,7 @@ async function decrypt(imgBlob, log = () => { }) {
     (imgdata.data[1] & 7) !== 3 ||
     mode === 0 || mode > 5
   ) {
-    throw new Error("\u{1f4c4}");
+    throw new Error("🔨");
   }
 
   log("读取元数据...");
