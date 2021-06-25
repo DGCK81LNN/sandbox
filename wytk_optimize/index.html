@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="format-detection" content="telephone=no">
-    <link rel="stylesheet" href="/css/soul_bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
-    <link rel="stylesheet" href="/css/commons.css">
-    <link rel="icon" href="/site_icon.png">
-    <link rel="shortcut icon" href="/site_icon.png">
-    <link rel="apple-touch-icon" href="/site_icon.png" sizes="160x160">
-    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/vue-resource/1.5.1/vue-resource.min.js"></script>
-    <script src="/js/components.min.js"></script>
-  <title>无影坦克2代（DGCK81LNN优化）</title>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="stylesheet" href="/css/soul_bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/viewerjs/1.10.0/viewer.css">
+  <link rel="stylesheet" href="/css/commons.css">
+  <link rel="icon" href="/site_icon.png">
+  <link rel="shortcut icon" href="/site_icon.png">
+  <link rel="apple-touch-icon" href="/site_icon.png" sizes="160x160">
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/vue-resource/1.5.1/vue-resource.min.js"></script>
+  <script src="https://cdn.bootcdn.net/ajax/libs/viewerjs/1.10.0/viewer.js"></script>
+  <script src="/js/components.min.js"></script>
+  <title>无影坦克LNN版</title>
   <style>
     .custom-file-input:lang(zh-cmn-Hans) ~ .custom-file-label::after {
       content: '浏览';
+    }
+    .section {
+      min-width: 267px;
+      max-width: 500px;
+      margin: 1em auto;
     }
   </style>
 </head>
@@ -33,74 +40,71 @@
     <soul-header></soul-header>
     <soul-main>
       <header>
-        <h1>无影坦克𝐈𝐈</h1>
-        <span class=soul-p2><a href="https://tieba.baidu.com/home/main?un=DGCK81LNN">DGCK81LNN</a>优化版</span>
+        <h1>无影坦克LNN版</h1>
+        <span class=soul-p2>by <a href="https://tieba.baidu.com/home/main?un=DGCK81LNN">DGCK81LNN</a></span>
       </header>
-      <b-card class="my-4">
-        <template #header>坦克现形</template>
-        <b-file
-          accept="image/*"
-          v-model="decryptData.image"
-          drop-placeholder="在此放下文件..."
-          placeholder="选择图片..."
-          @input="decrypt"
-        ></b-file>
-        <b-alert
-          v-if="decryptData.msgType"
-          show
-          role=status
-          :variant="decryptData.msgType==='error'?'danger':'info'" 
-          v-text="decryptData.msg"
-        ></b-alert>
-        <template v-else-if="decryptData.result">
-          <b-table-simple>
-            <b-tr><b-th>文件名</b-th><b-td v-text="decryptData.resultName"></b-td></b-tr>
-            <b-tr><b-th>MIME类型</b-th><b-td v-text="decryptData.resultType"></b-td></b-tr>
-            <b-tr><b-th>大小</b-th><b-td v-text="formatSize(decryptData.resultSize)"></b-td></b-tr>
-          </b-table-simple>
-          <b-img
-            v-if="decryptData.resultIsImage"
-            class="w-100 my-3"
-            :src="decryptData.result"
-          ></b-img>
-          <p v-else>里图似乎不是图片...?</p>
-          <b-button block @click="saveDecrypted">保存</b-button>
-        </template>
-      </b-card>
-      <b-card class="my-4">
-        <template #header>制作坦克（尚未完工，敬请期待...）</template>
-        <b-form-group disabled label-cols="2">
+      <b-card class="section">
+        <template #header>制作坦克</template>
+        <b-form-group label-cols="2">
           <template #label>表图</template>
           <b-file
             accept="image/*"
-            v-model="encryptData.image"
+            v-model="encodeData.image"
             drop-placeholder="在此放下文件..."
             placeholder="选择图片..."
           ></b-file>
         </b-form-group>
-        <b-form-group disabled label-cols="2">
-          <template #label>表图压缩度</template>
-          <b-radio-group v-model="encryptData.compressionLevel">
+        <b-form-group label-cols="2">
+          <template #label>编码深度</template>
+          <b-radio-group v-model="encodeData.depth">
             <b-radio :value=1>1</b-radio>
             <b-radio :value=2>2</b-radio>
             <b-radio :value=3>3</b-radio>
             <b-radio :value=4>4</b-radio>
+            <b-radio :value=5>5</b-radio>
           </b-radio-group>
-          <template #description>建议里图大小：小于{{ [null, "500K", "1M", "1.5M", "2M"][encryptData.compressionLevel] }}</template>
+          <template #description>建议里图大小：小于{{ [null, "500K", "1M", "1.5M", "2M"][encodeData.compressionLevel] }}</template>
         </b-form-group>
-        <b-form-group disabled label-cols="2">
+        <b-form-group label-cols="2">
           <template #label>里图</template>
           <b-file
-            v-model="encryptData.file"
+            v-model="encodeData.file"
             drop-placeholder="在此放下文件..."
             placeholder="选择文件..."
           ></b-file>
         </b-form-group>
-        <b-form-group disabled label-cols="2">
-          <template #label>左上角备注</template>
-          <b-input v-model="encryptData.label" placeholder="留空则不添加备注"></b-input>
-        </b-form-group>
-        <b-button disabled block variant=primary>合成图片</b-button>
+        <b-button block variant=primary @click="encode">合成图片</b-button>
+      </b-card>
+      <b-card class="section">
+        <template #header>坦克现形</template>
+        <b-file
+          accept="image/*"
+          v-model="decodeData.image"
+          drop-placeholder="在此放下文件..."
+          placeholder="选择图片..."
+          @input="decode"
+        ></b-file>
+        <b-alert
+          v-if="decodeData.msgType"
+          show
+          role=status
+          :variant="decodeData.msgType==='error'?'danger':'info'" 
+          v-text="decodeData.msg"
+        ></b-alert>
+        <template v-else-if="decodeData.result">
+          <b-table-simple>
+            <b-tr><b-th>文件名</b-th><b-td v-text="decodeData.resultName"></b-td></b-tr>
+            <b-tr><b-th>MIME类型</b-th><b-td v-text="decodeData.resultType"></b-td></b-tr>
+            <b-tr><b-th>大小</b-th><b-td v-text="formatSize(decodeData.resultSize)"></b-td></b-tr>
+          </b-table-simple>
+          <b-img
+            v-if="decodeData.resultIsImage"
+            class="w-100 my-3"
+            :src="decodeData.result"
+          ></b-img>
+          <p v-else>里图似乎不是图片...?</p>
+          <b-button block @click="saveDecoded">保存</b-button>
+        </template>
       </b-card>
       <footer class="text-center">
         <p>原版：<a href="https://wytk.github.io/">wytk.github.io</a> | <a href="http://wytk.yinjuzhe.top/">wytk.yinjuzhe.top</a> | <a href="https://lo-li.cc/wytk/">lo-li.cc/wytk</a></p>
