@@ -1,8 +1,7 @@
 // ==UserScript==
 // @name         无影坦克LNN版贴吧解码脚本
 // @namespace    https://dgck81lnn.github.io/sandbox/wytk_optimize/
-// @version      0.2
-// @description  try to take over the world!
+// @version      1.0
 // @author       DGCK81LNN
 // @match        http*://tieba.baidu.com/p/*
 // ==/UserScript==
@@ -80,6 +79,7 @@
 
     // 检查常见的错误MIME类型
     if (fileName.endsWith(".mp4")) fileType = "video/mp4";
+    if (fileName.endsWith(".webm")) fileType = "video/webm";
     if (fileName.endsWith(".zip")) fileType = "application/zip";
     if (fileName.endsWith(".txt")) fileType = "text/plain";
 
@@ -141,28 +141,52 @@
     }
   }
 
-  async function decodeTiebaImage(url) {
-    try {
-      var imgResponse = await unsafeWindow.fetch(url);
-      var imgBlob = await imgResponse.blob();
-      var result = await decode(imgBlob);
-      console.log(result);
-      var popup = window.open(window.URL.createObjectURL(result), "wytk-lnn", "scrollbars=yes");
-      popup.onload = () => {
-        setTimeout(() => {
-          popup.alert(`解码成功\n文件名：${result.name}\n大小：${formatSize(result.size)}`);
-        }, 100);
-      };
-    } catch(error) {
-      alert(error);
-    }
-  }
-
   [...document.querySelectorAll(".BDE_Image")].forEach(img=>{
     var url = img.src.replace("http://", "https://").replace(/w%3D[^\/]+\/sign=[^\/]+/, "pic/item");
-    var btn = img.parentNode.insertBefore(document.createElement("button"),img)
+    var btnContainer = img.parentNode.insertBefore(document.createElement("div"), img);
+    var btn = btnContainer.appendChild(document.createElement("button"));
     btn.textContent = "解码无影坦克";
-    btn.style.cssText = "float: right; font-size: 1.5rem; padding: 0.5rem";
-    btn.onclick = () => { decodeTiebaImage(url) };
+    btn.style.cssText = "font-size: 1.5rem; padding: 0.5rem; border: 1px solid";
+    btn.onclick = async () => {
+      try {
+        var next = btn.parentElement.nextElementSibling;
+        if (!img.isConnected) img = next.querySelector(".BDE_Image");
+        var imgResponse = await unsafeWindow.fetch(url);
+        var imgBlob = await imgResponse.blob();
+        var result = await decode(imgBlob);
+        console.log(result);
+        var el;
+        if (result.type.startsWith("video/")) {
+          el = document.createElement("video");
+          el.controls = true;
+        }
+        else {
+          el = document.createElement("img");
+        }
+        el.alt = el.title = `${result.name} (MIME类型：${result.type})`;
+        el.style.cssText = "max-width: 100%";
+        el.src = window.URL.createObjectURL(result);
+        next.parentNode.replaceChild(el, next);
+        btn.textContent = `保存 ${result.name} (${formatSize(result.size)})`;
+        btn.onclick = () => {
+          var a = document.createElement("a");
+          a.download = result.name;
+          a.href = img.src;
+          a.click();
+        };
+        var btn2 = btnContainer.appendChild(document.createElement("button"));
+        btn2.textContent = `保存坦克图原图 (${formatSize(imgBlob.size)})`;
+        btn2.style.cssText = "font-size: 1.5rem; padding: 0.5rem; border: 1px solid";
+        btn2.onclick = () => {
+          var a = document.createElement("a");
+          a.download = result.name;
+          a.href = URL.createObjectURL(imgBlob);
+          a.click();
+        };
+      } catch(error) {
+        btn.textContent = String(error);
+        console.error(error);
+      }
+    };
   });
 })();
