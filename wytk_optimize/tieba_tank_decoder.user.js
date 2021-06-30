@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         无影坦克LNN版贴吧解码脚本
 // @namespace    https://dgck81lnn.github.io/sandbox/wytk_optimize/
-// @version      1.0
+// @version      1.0.1
 // @author       DGCK81LNN
 // @match        http*://tieba.baidu.com/p/*
 // ==/UserScript==
@@ -171,7 +171,7 @@
         btn.onclick = () => {
           var a = document.createElement("a");
           a.download = result.name;
-          a.href = img.src;
+          a.href = el.src;
           a.click();
         };
         var btn2 = btnContainer.appendChild(document.createElement("button"));
