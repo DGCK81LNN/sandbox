@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         无影坦克LNN版贴吧解码脚本
 // @namespace    https://dgck81lnn.github.io/sandbox/wytk_optimize/
-// @version      1.0.1
+// @version      1.0.2
 // @author       DGCK81LNN
 // @match        http*://tieba.baidu.com/p/*
 // ==/UserScript==
@@ -179,8 +179,8 @@
         btn2.style.cssText = "font-size: 1.5rem; padding: 0.5rem; border: 1px solid";
         btn2.onclick = () => {
           var a = document.createElement("a");
-          a.download = result.name;
-          a.href = URL.createObjectURL(imgBlob);
+          a.download = result.name + "_TK.png";
+          a.href = url;
           a.click();
         };
       } catch(error) {
