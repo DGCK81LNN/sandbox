@@ -1,12 +1,12 @@
 // ==UserScript==
 // @name         无影坦克LNN版贴吧解码脚本
 // @namespace    https://dgck81lnn.github.io/sandbox/wytk_optimize/
-// @version      1.0.2
+// @version      1.1.0
 // @author       DGCK81LNN
 // @match        http*://tieba.baidu.com/p/*
 // ==/UserScript==
 
-(function() {
+(function () {
   'use strict';
 
   var img = new Image();
@@ -68,7 +68,7 @@
     j = 0;
     while (i < pixelCount && j < fileSize) {
       while (bitBuffer.length < 8) {
-        bitBuffer.enqueue(imgdata.data[i << 2    ], mode);
+        bitBuffer.enqueue(imgdata.data[i << 2], mode);
         bitBuffer.enqueue(imgdata.data[i << 2 | 1], mode);
         bitBuffer.enqueue(imgdata.data[i << 2 | 2], mode);
         ++i;
@@ -141,52 +141,88 @@
     }
   }
 
-  [...document.querySelectorAll(".BDE_Image")].forEach(img=>{
-    var url = img.src.replace("http://", "https://").replace(/w%3D[^\/]+\/sign=[^\/]+/, "pic/item");
-    var btnContainer = img.parentNode.insertBefore(document.createElement("div"), img);
-    var btn = btnContainer.appendChild(document.createElement("button"));
-    btn.textContent = "解码无影坦克";
-    btn.style.cssText = "font-size: 1.5rem; padding: 0.5rem; border: 1px solid";
-    btn.onclick = async () => {
-      try {
-        var next = btn.parentElement.nextElementSibling;
-        if (!img.isConnected) img = next.querySelector(".BDE_Image");
-        var imgResponse = await unsafeWindow.fetch(url);
-        var imgBlob = await imgResponse.blob();
-        var result = await decode(imgBlob);
-        console.log(result);
-        var el;
-        if (result.type.startsWith("video/")) {
-          el = document.createElement("video");
-          el.controls = true;
+  var style = document.head.appendChild(document.createElement("style"));
+  style.textContent = `
+.lnntk {
+position: relative;
+}
+.lnntk-hover {
+position: absolute;
+top: 0;
+right: 0;
+transition: opacity 0.25s;
+}
+.lnntk:not(:hover) .lnntk-hover {
+opacity: 0;
+}
+.lnntk-hover button {
+padding: 0.5rem;
+border: 1px solid;
+}
+.lnntk-result {
+max-width: 100%;
+}`;
+  setInterval(() => {
+    [...document.querySelectorAll(".BDE_Image:not(.lnntk-orig)")].forEach(origEl => {
+      var wrapperEl = document.createElement("div");
+      wrapperEl.className = "lnntk";
+      origEl.parentNode.replaceChild(wrapperEl, origEl);
+      origEl.className = "lnntk-orig";
+      var hoverEl = wrapperEl.appendChild(document.createElement("div"));
+      hoverEl.className = "lnntk-hover";
+      var decodeButton = hoverEl.appendChild(document.createElement("button"));
+      decodeButton.textContent = "解码无影坦克";
+      wrapperEl.appendChild(origEl);
+
+      var origUrl = origEl.src.replace("http://", "https://").replace(/w%3D[^\/]+\/sign=[^\/]+/, "pic/item");
+      decodeButton.onclick = async () => {
+        try {
+          decodeButton.textContent = "解码中……";
+
+          if (!origEl.isConnected) origEl = wrapperEl.querySelector(".BDE_Image");
+          var origBlob = await (await unsafeWindow.fetch(origUrl)).blob();
+          var resultBlob = await decode(origBlob);
+          console.log("lnntk decode result: ", resultBlob);
+          var resultUrl = window.URL.createObjectURL(resultBlob);
+
+          hoverEl.textContent = "";
+          var saveFileButton = hoverEl.appendChild(document.createElement("button"));
+          saveFileButton.textContent = `保存里图 (${formatSize(resultBlob.size)})`;
+          saveFileButton.onclick = () => {
+            var a = document.createElement("a");
+            a.download = resultBlob.name;
+            a.href = resultUrl;
+            a.click();
+          };
+          var saveImgButton = hoverEl.appendChild(document.createElement("button"));
+          saveImgButton.textContent = `保存原坦克图 (${formatSize(origBlob.size)})`;
+          saveImgButton.onclick = () => {
+            var a = document.createElement("a");
+            a.download = resultBlob.name + "_TK.png";
+            a.href = origUrl;
+            a.click();
+          };
+
+          var resultEl;
+          if (resultBlob.type.startsWith("video/")) {
+            resultEl = document.createElement("video");
+            resultEl.controls = true;
+          }
+          else {
+            resultEl = document.createElement("img");
+          }
+          resultEl.alt = resultEl.title = `${resultBlob.name} (MIME类型：${resultBlob.type})`;
+          resultEl.className = "lnntk-result";
+          resultEl.src = resultUrl;
+          wrapperEl.textContent = "";
+          wrapperEl.appendChild(hoverEl);
+          wrapperEl.appendChild(resultEl);
         }
-        else {
-          el = document.createElement("img");
+        catch (error) {
+          decodeButton.textContent = String(error);
+          console.error(error);
         }
-        el.alt = el.title = `${result.name} (MIME类型：${result.type})`;
-        el.style.cssText = "max-width: 100%";
-        el.src = window.URL.createObjectURL(result);
-        next.parentNode.replaceChild(el, next);
-        btn.textContent = `保存 ${result.name} (${formatSize(result.size)})`;
-        btn.onclick = () => {
-          var a = document.createElement("a");
-          a.download = result.name;
-          a.href = el.src;
-          a.click();
-        };
-        var btn2 = btnContainer.appendChild(document.createElement("button"));
-        btn2.textContent = `保存坦克图原图 (${formatSize(imgBlob.size)})`;
-        btn2.style.cssText = "font-size: 1.5rem; padding: 0.5rem; border: 1px solid";
-        btn2.onclick = () => {
-          var a = document.createElement("a");
-          a.download = result.name + "_TK.png";
-          a.href = url;
-          a.click();
-        };
-      } catch(error) {
-        btn.textContent = String(error);
-        console.error(error);
-      }
-    };
-  });
+      };
+    });
+  }, 3000);
 })();
