@@ -27,7 +27,58 @@
     .section {
       min-width: 267px;
       max-width: 500px;
-      margin: 1em auto;
+      margin: 1rem auto;
+    }
+    .filepicker {
+      border: 1px solid;
+      aspect-ratio: 1 / 1;
+    }
+    .decoder-result {
+      height: 5rem;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .decoder-result-preview {
+      background: #eee;
+      width: 5rem;
+      height: 5rem;
+      box-sizing: content-box;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .decoder-result-preview img {
+      max-width: 5rem;
+      max-height: 5rem;
+      margin: auto;
+    }
+    .decoder-result-text {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      margin: 0 0.5rem;
+    }
+    .decoder-result-actions {
+      flex: 0 0 auto;
+      width: 5em;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+    }
+    #decoder-add {
+      height: 5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .can-drag-into {
+      transition: filter 0.5s;
+    }
+    .can-drag-into.drag-entered {
+      filter: contrast(0.8);
     }
   </style>
 </head>
@@ -46,80 +97,141 @@
       </header>
       <p class="soul-p1">本程序为测试版，许多功能尚不完善，敬请期待正式版发布！</p>
       <p class="soul-p1 text-danger">免责声明：本页面仅供技术研究使用，使用者做出的行为及后果作者概不负责！</p>
-      <p>2021-06-26：新增<a href="tieba_tank_decoder.user.js">贴吧解码油猴脚本</a>，可直接从帖子页面解码，无需点开大图！</p>
-      <b-card class="section">
-        <template #header>制作坦克</template>
-        <b-form-group label-cols="2">
-          <template #label>表图</template>
-          <b-file
-            accept="image/*"
-            v-model="encodeData.image"
-            drop-placeholder="在此放下文件..."
-            placeholder="选择图片..."
-          ></b-file>
-        </b-form-group>
-        <b-form-group label-cols="2">
-          <template #label>编码深度</template>
-          <b-radio-group v-model="encodeData.depth">
-            <b-radio :value=1>1</b-radio>
-            <b-radio :value=2>2</b-radio>
-            <b-radio :value=3>3</b-radio>
-            <b-radio :value=4>4</b-radio>
-            <b-radio :value=5>5</b-radio>
-          </b-radio-group>
-          <template #description>建议里图大小：小于{{ [null, "500K", "1M", "1.5M", "2M"][encodeData.compressionLevel] }}</template>
-        </b-form-group>
-        <b-form-group label-cols="2">
-          <template #label>里图</template>
-          <b-file
-            v-model="encodeData.file"
-            drop-placeholder="在此放下文件..."
-            placeholder="选择文件..."
-          ></b-file>
-        </b-form-group>
-        <b-button block variant=primary @click="encode">合成图片</b-button>
-      </b-card>
-      <b-card class="section">
-        <template #header>坦克现形</template>
-        <b-file
-          accept="image/*"
-          v-model="decodeData.image"
-          drop-placeholder="在此放下文件..."
-          placeholder="选择图片..."
-          @input="decode"
-        ></b-file>
-        <b-alert
-          v-if="decodeData.msgType"
-          show
-          role=status
-          :variant="decodeData.msgType==='error'?'danger':'info'" 
-          v-text="decodeData.msg"
-        ></b-alert>
-        <template v-else-if="decodeData.result">
-          <b-table-simple>
-            <b-tr><b-th>文件名</b-th><b-td v-text="decodeData.resultName"></b-td></b-tr>
-            <b-tr><b-th>MIME类型</b-th><b-td v-text="decodeData.resultType"></b-td></b-tr>
-            <b-tr><b-th>大小</b-th><b-td v-text="formatSize(decodeData.resultSize)"></b-td></b-tr>
-          </b-table-simple>
-          <b-img
-            v-if="decodeData.resultIsImage"
-            class="w-100 my-3"
-            :src="decodeData.result"
-          ></b-img>
-          <p v-else>里图似乎不是图片...?</p>
-          <b-button block @click="saveDecoded">保存</b-button>
-        </template>
-      </b-card>
+      <p>电脑用户可以安装<a href="tieba_tank_decoder.user.js">贴吧解码油猴脚本</a>，可直接从帖子页面解码，无需点开大图！（油猴插件的安装方法请自行学习，这里不再赘述。）</p>
+      <p>2021-08-28：由于搁置太久，我决定把只做了一半的新版本更新出来，这个新版本还没有制作坦克的功能，请大家暂时使用其他工厂制作坦克。不过，现在这个版本可以批量现形了！</p>
+      <div id=wytkapp>
+        <b-card
+          :class="{ 'section': true, 'can-drag-into': true, 'drag-entered': isDraggingIntoDecoder }"
+          @dragenter="decoderOnDragEnter"
+          @dragleave="decoderOnDragLeave"
+          @dragover="decoderOnDragOver"
+          @drop="decoderOnDrop"
+        >
+          <template #header>坦克现形</template>
+          <b-row>
+            <b-col cols=6>
+              <b-button variant=primary block :disabled="decoder.length === 0" @click="decoderSaveAll">
+                <b-icon icon=download aria-hidden=true></b-icon>
+                全部保存
+              </b-button>
+            </b-col>
+            <b-col cols=6>
+              <b-button variant=danger block :disabled="decoder.length === 0" @click="decoderDeleteAll">
+                <b-icon icon=trash aria-hidden=true></b-icon>
+                全部清空
+              </b-button>
+            </b-col>
+          </b-row>
+          <table class="mt-4" v-if="decoder.length">
+            <tr class="decoder-result" v-for="(task, i) in decoder">
+              <td>
+                <div class="decoder-result-preview">
+                  <b-img :src="task.imageURL"></b-img>
+                </div>
+              </td>
+              <td>
+                <b-icon icon=arrow-right-short></b-icon>
+              </td>
+              <td v-if="!task.result" colspan=3>
+                <div class="decoder-result-text">
+                  <div>正在处理……</div>
+                </div>
+              </td>
+              <template v-else-if="isError(task.result)">
+                <td colspan=2>
+                  <div class="decoder-result-text">
+                    <div>{{ task.result }}</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="decoder-result-actions">
+                    <b-button variant=danger size=sm @click="decoderDeleteTask(i)">
+                      <b-icon icon=x-circle aria-hidden=true></b-icon>
+                      忽略
+                    </b-button>
+                  </div>
+                </td>
+              </template>
+              <template v-else>
+                <td>
+                  <div class="decoder-result-preview">
+                    <b-img :src="task.resultURL"></b-img>
+                  </div>
+                </td>
+                <td>
+                  <div class="decoder-result-text">
+                    <div class="text-break">{{ task.result.name }}</div>
+                    <div>{{ formatSize(task.result.size) }}</div>
+                  </div>
+                </td>
+                <td>
+                  <div class="decoder-result-actions">
+                    <b-button variant=primary size=sm @click="decoderSaveResult(i)">
+                      <b-icon icon=download aria-hidden=true></b-icon>
+                      保存
+                    </b-button>
+                    <b-button variant=danger size=sm @click="decoderDeleteTask(i)">
+                      <b-icon icon=trash aria-hidden=true></b-icon>
+                      舍弃
+                    </b-button>
+                  </div>
+                </td>
+              </template>
+            </tr>
+          </table>
+          <div id=decoder-add class="border">一个文件选取器</div>
+        </b-card>
+        <!--<b-card class="section">
+          <template #header>制作坦克</template>
+          <b-row>
+            <b-col cols=6>
+              <b-form-group>
+                <template #label>表图</template>
+                <div class=filepicker>一个文件选取器</div>
+              </b-form-group>
+            </b-col>
+            <b-col cols=6>
+              <b-form-group>
+                <template #label>里图</template>
+                <div class=filepicker>一个文件选取器</div>
+              </b-form-group>
+            </b-col>
+          </b-row>
+          <b-form-group disabled label-cols="3">
+            <template #label>隐写深度</template>
+            <b-radio-group buttons class="w-100">
+              <b-radio :value=1>1</b-radio>
+              <b-radio :value=2>2</b-radio>
+              <b-radio :value=3>3</b-radio>
+              <b-radio :value=4>4</b-radio>
+              <b-radio :value=5>5</b-radio>
+              <b-radio :value=6>6</b-radio>
+              <b-radio :value=7>7</b-radio>
+            </b-radio-group>
+          </b-form-group>
+          <b-form-group>
+            <template #label>预览</template>
+            <b-img></b-img>
+          </b-form-group>
+          <b-alert show variant=warning>生成的坦克图超过10MB，发送到贴吧将被压缩！</b-alert>
+          <b-button block variant=primary>
+            <b-icon icon=download aria-hidden=true></b-icon>
+            保存
+          </b-button>
+        </b-card>-->
+      </div>
       <b-card>
         <template #header>更新日志</template>
         <ul>
           <li>2021-06-26: 添加贴吧解码油猴脚本
           <li>2021-06-25: 添加制作坦克功能
           <li>2021-06-23: 首次发布，只实现了坦克现形
+          <li>2021-06-26：添加贴吧解码油猴脚本
+          <li>2021-08-28：发布全新现形器，支持批量现形，暂时移除制作坦克功能（新旧代码不兼容）
         </ul>
       </b-card>
       <footer class="text-center">
-        <p>原版：<a href="https://wytk.github.io/">wytk.github.io</a> | <a href="http://wytk.yinjuzhe.top/">wytk.yinjuzhe.top</a></p>
+        <p>原版：<a href="https://newytk.github.io/">newytk.github.io</a></p>
       </footer>
     </soul-main>
     <soul-footer></soul-footer>
