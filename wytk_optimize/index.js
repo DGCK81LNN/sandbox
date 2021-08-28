@@ -37,10 +37,23 @@ window.vm = new Vue({
         if (!item.type.startsWith("image/")) return;
         foundAnyImage = true;
         vm.decoderStartTask(item.getAsFile());
-      })
+      });
       if (!foundAnyImage) { // 如果拖拽的项目中没有图片
         alert("没有找到图片，请下载图片再拖拽解码");
       }
+    },
+    decoderSelectFiles() {
+      var fileSelector = document.createElement("input");
+      fileSelector.type = "file";
+      fileSelector.multiple = true;
+      fileSelector.onchange = () => {
+        fileSelector.onchange = null;
+        [...fileSelector.files].forEach(file => {
+        if (!file.type.startsWith("image/")) return;
+        vm.decoderStartTask(file);
+      })
+      };
+      fileSelector.click();
     },
     /** @param {Blob} imageBlob */
     decoderStartTask(imageBlob) {

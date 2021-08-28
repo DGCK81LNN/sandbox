@@ -29,14 +29,8 @@
       max-width: 500px;
       margin: 1rem auto;
     }
-    .filepicker {
-      border: 1px solid;
-      aspect-ratio: 1 / 1;
-    }
-    .decoder-result {
-      height: 5rem;
-      align-items: center;
-      margin-bottom: 1rem;
+    #decoder-results {
+      overflow-x: auto;
     }
     .decoder-result-preview {
       background: #eee;
@@ -69,6 +63,7 @@
       justify-content: space-around;
     }
     #decoder-add {
+      margin-top: 1rem;
       height: 5rem;
       display: flex;
       align-items: center;
@@ -122,64 +117,66 @@
               </b-button>
             </b-col>
           </b-row>
-          <table class="mt-4" v-if="decoder.length">
-            <tr class="decoder-result" v-for="(task, i) in decoder">
-              <td>
-                <div class="decoder-result-preview">
-                  <b-img :src="task.imageURL"></b-img>
-                </div>
-              </td>
-              <td>
-                <b-icon icon=arrow-right-short></b-icon>
-              </td>
-              <td v-if="!task.result" colspan=3>
-                <div class="decoder-result-text">
-                  <div>正在处理……</div>
-                </div>
-              </td>
-              <template v-else-if="isError(task.result)">
-                <td colspan=2>
-                  <div class="decoder-result-text">
-                    <div>{{ task.result }}</div>
-                  </div>
-                </td>
-                <td>
-                  <div class="decoder-result-actions">
-                    <b-button variant=danger size=sm @click="decoderDeleteTask(i)">
-                      <b-icon icon=x-circle aria-hidden=true></b-icon>
-                      忽略
-                    </b-button>
-                  </div>
-                </td>
-              </template>
-              <template v-else>
+          <div id="decoder-results">
+            <table class="mt-4" v-if="decoder.length">
+              <tr class="decoder-result" v-for="(task, i) in decoder">
                 <td>
                   <div class="decoder-result-preview">
-                    <b-img :src="task.resultURL"></b-img>
+                    <b-img :src="task.imageURL"></b-img>
                   </div>
                 </td>
                 <td>
+                  <b-icon icon=arrow-right-short></b-icon>
+                </td>
+                <td v-if="!task.result" colspan=3>
                   <div class="decoder-result-text">
-                    <div class="text-break">{{ task.result.name }}</div>
-                    <div>{{ formatSize(task.result.size) }}</div>
+                    <div>正在处理……</div>
                   </div>
                 </td>
-                <td>
-                  <div class="decoder-result-actions">
-                    <b-button variant=primary size=sm @click="decoderSaveResult(i)">
-                      <b-icon icon=download aria-hidden=true></b-icon>
-                      保存
-                    </b-button>
-                    <b-button variant=danger size=sm @click="decoderDeleteTask(i)">
-                      <b-icon icon=trash aria-hidden=true></b-icon>
-                      舍弃
-                    </b-button>
-                  </div>
-                </td>
-              </template>
-            </tr>
-          </table>
-          <div id=decoder-add class="border">一个文件选取器</div>
+                <template v-else-if="isError(task.result)">
+                  <td colspan=2>
+                    <div class="decoder-result-text">
+                      <div>{{ task.result }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="decoder-result-actions">
+                      <b-button variant=danger size=sm @click="decoderDeleteTask(i)">
+                        <b-icon icon=x-circle aria-hidden=true></b-icon>
+                        忽略
+                      </b-button>
+                    </div>
+                  </td>
+                </template>
+                <template v-else>
+                  <td>
+                    <div class="decoder-result-preview">
+                      <b-img :src="task.resultURL"></b-img>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="decoder-result-text">
+                      <div class="text-break">{{ task.result.name }}</div>
+                      <div>{{ formatSize(task.result.size) }}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="decoder-result-actions">
+                      <b-button variant=primary size=sm @click="decoderSaveResult(i)">
+                        <b-icon icon=download aria-hidden=true></b-icon>
+                        保存
+                      </b-button>
+                      <b-button variant=danger size=sm @click="decoderDeleteTask(i)">
+                        <b-icon icon=trash aria-hidden=true></b-icon>
+                        舍弃
+                      </b-button>
+                    </div>
+                  </td>
+                </template>
+              </tr>
+            </table>
+          </div>
+          <div id=decoder-add class="border" @click="decoderSelectFiles">点击这里或拖拽文件到此处</div>
         </b-card>
         <!--<b-card class="section">
           <template #header>制作坦克</template>
