@@ -1,13 +1,33 @@
 // ==UserScript==
 // @name         无影坦克LNN版贴吧解码脚本
-// @namespace    https://dgck81lnn.github.io/sandbox/wytk_optimize/
-// @version      1.1.1
 // @author       DGCK81LNN
+// @homepage     https://dgck81lnn.github.io/sandbox/wytk_optimize/
+// @version      1.2.1
+// @updateURL    https://dgck81lnn.github.io/sandbox/wytk_optimize/tieba_tank_decoder.user.js
 // @match        http*://tieba.baidu.com/p/*
+// @grant        GM_setValue
+// @grant        GM_getValue
 // ==/UserScript==
+
+/*
+ * 启用本脚本，打开一个贴吧主题帖，鼠标悬浮在图片上会出现“解码无影坦克”按钮。
+ *
+ * 解码成功后，里图会出现在坦克图原来的位置。鼠标悬浮在里图上会显示里图的文件名。
+ *
+ * 在控制台运行此代码可解码当前页上的所有图片：
+ *
+ *     LNNTk.decodeAll()
+ *
+ * 也可以使用 LNNTk.autoShowDecodeResult 来设置解码完成后是否自动显示里图：
+ *
+ *     LNNTk.autoShowDecodeResult = false // 不自动显示里图
+ *     LNNTk.autoShowDecodeResult = true // 自动显示里图（默认）
+ */
 
 (function () {
   'use strict';
+
+  if (typeof unsafeWindow !== "object") var unsafeWindow = window;
 
   var img = new Image();
   var cvs = document.createElement("canvas");
@@ -167,6 +187,9 @@ border: 1px solid;
 .lnntk-result {
 max-width: 100%;
 }`;
+
+  var decodeFuncs = new Set();
+
   setInterval(() => {
     [...document.querySelectorAll(".BDE_Image:not(.lnntk-orig)")].forEach(origEl => {
       var wrapperEl = document.createElement("div");
@@ -180,15 +203,15 @@ max-width: 100%;
       wrapperEl.appendChild(origEl);
 
       var origUrl = origEl.src.replace("http://", "https://").replace(/w%3D[^\/]+\/sign=[^\/]+/, "pic/item");
-      decodeButton.onclick = async () => {
+      const decodeFunc = async () => {
         try {
           decodeButton.textContent = "解码中……";
 
-          if (!origEl.isConnected) origEl = wrapperEl.querySelector(".BDE_Image");
           var origBlob = await (await unsafeWindow.fetch(origUrl)).blob();
           var resultBlob = await decode(origBlob);
           console.log("lnntk decode result: ", resultBlob);
           var resultUrl = window.URL.createObjectURL(resultBlob);
+          var origDownloadedUrl = window.URL.createObjectURL(origBlob);
 
           hoverEl.textContent = "";
           var saveFileButton = hoverEl.appendChild(document.createElement("button"));
@@ -204,7 +227,7 @@ max-width: 100%;
           saveImgButton.onclick = () => {
             var a = document.createElement("a");
             a.download = resultBlob.name + "_TK.png";
-            a.href = origUrl;
+            a.href = origDownloadedUrl;
             a.click();
           };
 
@@ -216,18 +239,46 @@ max-width: 100%;
           else {
             resultEl = document.createElement("img");
           }
-          resultEl.alt = resultEl.title = `${resultBlob.name} (MIME类型：${resultBlob.type})`;
+          resultEl.alt = resultEl.title = `${resultBlob.name} (MIME类型：${resultBlob.type}) — 点击显示表图`;
           resultEl.className = "lnntk-result";
           resultEl.src = resultUrl;
+          resultEl.onclick = () => { resultEl.hidden = true; origEl.hidden = false };
+          origEl = document.createElement("img");
+          origEl.title = `${resultBlob.name} (MIME类型：${resultBlob.type}) — 点击显示里图`;
+          origEl.className = "lnntk-result";
+          origEl.src = origDownloadedUrl;
+          origEl.onclick = () => { resultEl.hidden = false; origEl.hidden = true };
+          (LNNTk.autoShowDecodeResult ? origEl : resultEl).hidden = true;
           wrapperEl.textContent = "";
           wrapperEl.appendChild(hoverEl);
           wrapperEl.appendChild(resultEl);
+          wrapperEl.appendChild(origEl);
+
+          decodeFuncs.delete(decodeFunc);
         }
         catch (error) {
           decodeButton.textContent = String(error);
           console.error(error);
         }
       };
+
+      decodeButton.onclick = () => { decodeFunc(); };
+      decodeFuncs.add(decodeFunc);
     });
   }, 3000);
+
+  var LNNTk = unsafeWindow.LNNTk = {
+    async decodeAll() {
+      for (let decodeFunc of decodeFuncs.values()) {
+        await decodeFunc();
+      }
+    },
+    get autoShowDecodeResult() {
+      return GM_getValue("autoShowDecodeResult", true);
+    },
+    set autoShowDecodeResult(value) {
+      GM_setValue("autoShowDecodeResult", Boolean(value));
+    },
+  };
+  GM_setValue("autoShowDecodeResult", GM_getValue("autoShowDecodeResult", true));
 })();
