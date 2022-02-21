@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         无影坦克LNN版贴吧解码脚本
 // @namespace    https://dgck81lnn.github.io/sandbox/wytk_optimize/
-// @version      1.1.0
+// @version      1.1.1
 // @author       DGCK81LNN
 // @match        http*://tieba.baidu.com/p/*
 // ==/UserScript==
@@ -154,6 +154,11 @@ transition: opacity 0.25s;
 }
 .lnntk:not(:hover) .lnntk-hover {
 opacity: 0;
+}
+@media (hover: none) {
+.lnntk:not(:hover) .lnntk-hover {
+opacity: 0.3;
+}
 }
 .lnntk-hover button {
 padding: 0.5rem;
