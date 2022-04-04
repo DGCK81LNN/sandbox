@@ -1,8 +1,9 @@
+<!DOCTYPE HTML>
 <html>
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="robots" content="noindex">
+    <meta charset=utf-8>
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <meta name=robots content="noindex">
     <title>
       LNN's swiss-knife util
     </title>
@@ -21,130 +22,255 @@
         resize: none;
       }
     </style>
-    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/codemirror.css">
+    <link rel=stylesheet href="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/codemirror.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/codemirror.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/mode/javascript/javascript.min.js"></script>
     <script src="/js/utils.js"></script>
-    <script>const HTML_ENTITIES_NONASCII = {"\xa0":"nbsp","\xa1":"iexcl","\xa2":"cent","\xa3":"pound","\xa4":"curren","\xa5":"yen","\xa6":"brvbar","\xa7":"sect","\xa8":"Dot","\xa9":"copy","\xaa":"ordf","\xab":"laquo","\xac":"not","\xad":"shy","\xae":"reg","\xaf":"macr","\xb0":"deg","\xb1":"pm","\xb2":"sup2","\xb3":"sup3","\xb4":"acute","\xb5":"micro","\xb6":"para","\xb7":"middot","\xb8":"cedil","\xb9":"sup1","\xba":"ordm","\xbb":"raquo","\xbc":"frac14","\xbd":"half","\xbe":"frac34","\xbf":"iquest","\xc0":"Agrave","\xc1":"Aacute","\xc2":"Acirc","\xc3":"Atilde","\xc4":"Auml","\xc5":"Aring","\xc6":"AElig","\xc7":"Ccedil","\xc8":"Egrave","\xc9":"Eacute","\xca":"Ecirc","\xcb":"Euml","\xcc":"Igrave","\xcd":"Iacute","\xce":"Icirc","\xcf":"Iuml","\xd0":"ETH","\xd1":"Ntilde","\xd2":"Ograve","\xd3":"Oacute","\xd4":"Ocirc","\xd5":"Otilde","\xd6":"Ouml","\xd7":"times","\xd8":"Oslash","\xd9":"Ugrave","\xda":"Uacute","\xdb":"Ucirc","\xdc":"Uuml","\xdd":"Yacute","\xde":"THORN","\xdf":"szlig","\xe0":"agrave","\xe1":"aacute","\xe2":"acirc","\xe3":"atilde","\xe4":"auml","\xe5":"aring","\xe6":"aelig","\xe7":"ccedil","\xe8":"egrave","\xe9":"eacute","\xea":"ecirc","\xeb":"euml","\xec":"igrave","\xed":"iacute","\xee":"icirc","\xef":"iuml","\xf0":"eth","\xf1":"ntilde","\xf2":"ograve","\xf3":"oacute","\xf4":"ocirc","\xf5":"otilde","\xf6":"ouml","\xf7":"div","\xf8":"oslash","\xf9":"ugrave","\xfa":"uacute","\xfb":"ucirc","\xfc":"uuml","\xfd":"yacute","\xfe":"thorn","\xff":"yuml","\u0100":"Amacr","\u0101":"amacr","\u0102":"Abreve","\u0103":"abreve","\u0104":"Aogon","\u0105":"aogon","\u0106":"Cacute","\u0107":"cacute","\u0108":"Ccirc","\u0109":"ccirc","\u010a":"Cdot","\u010b":"cdot","\u010c":"Ccaron","\u010d":"ccaron","\u010e":"Dcaron","\u010f":"dcaron","\u0110":"Dstrok","\u0111":"dstrok","\u0112":"Emacr","\u0113":"emacr","\u0116":"Edot","\u0117":"edot","\u0118":"Eogon","\u0119":"eogon","\u011a":"Ecaron","\u011b":"ecaron","\u011c":"Gcirc","\u011d":"gcirc","\u011e":"Gbreve","\u011f":"gbreve","\u0120":"Gdot","\u0121":"gdot","\u0122":"Gcedil","\u0124":"Hcirc","\u0125":"hcirc","\u0126":"Hstrok","\u0127":"hstrok","\u0128":"Itilde","\u0129":"itilde","\u012a":"Imacr","\u012b":"imacr","\u012e":"Iogon","\u012f":"iogon","\u0130":"Idot","\u0131":"imath","\u0132":"IJlig","\u0133":"ijlig","\u0134":"Jcirc","\u0135":"jcirc","\u0136":"Kcedil","\u0137":"kcedil","\u0138":"kgreen","\u0139":"Lacute","\u013a":"lacute","\u013b":"Lcedil","\u013c":"lcedil","\u013d":"Lcaron","\u013e":"lcaron","\u013f":"Lmidot","\u0140":"lmidot","\u0141":"Lstrok","\u0142":"lstrok","\u0143":"Nacute","\u0144":"nacute","\u0145":"Ncedil","\u0146":"ncedil","\u0147":"Ncaron","\u0148":"ncaron","\u0149":"napos","\u014a":"ENG","\u014b":"eng","\u014c":"Omacr","\u014d":"omacr","\u0150":"Odblac","\u0151":"odblac","\u0152":"OElig","\u0153":"oelig","\u0154":"Racute","\u0155":"racute","\u0156":"Rcedil","\u0157":"rcedil","\u0158":"Rcaron","\u0159":"rcaron","\u015a":"Sacute","\u015b":"sacute","\u015c":"Scirc","\u015d":"scirc","\u015e":"Scedil","\u015f":"scedil","\u0160":"Scaron","\u0161":"scaron","\u0162":"Tcedil","\u0163":"tcedil","\u0164":"Tcaron","\u0165":"tcaron","\u0166":"Tstrok","\u0167":"tstrok","\u0168":"Utilde","\u0169":"utilde","\u016a":"Umacr","\u016b":"umacr","\u016c":"Ubreve","\u016d":"ubreve","\u016e":"Uring","\u016f":"uring","\u0170":"Udblac","\u0171":"udblac","\u0172":"Uogon","\u0173":"uogon","\u0174":"Wcirc","\u0175":"wcirc","\u0176":"Ycirc","\u0177":"ycirc","\u0178":"Yuml","\u0179":"Zacute","\u017a":"zacute","\u017b":"Zdot","\u017c":"zdot","\u017d":"Zcaron","\u017e":"zcaron","\u0192":"fnof","\u01b5":"imped","\u01f5":"gacute","\u0237":"jmath","\u02c6":"circ","\u02c7":"caron","\u02d8":"breve","\u02d9":"dot","\u02da":"ring","\u02db":"ogon","\u02dc":"tilde","\u02dd":"dblac","\u0311":"DownBreve","\x5f":"UnderBar","\u0391":"Alpha","\u0392":"Beta","\u0393":"Gamma","\u0394":"Delta","\u0395":"Epsilon","\u0396":"Zeta","\u0397":"Eta","\u0398":"Theta","\u0399":"Iota","\u039a":"Kappa","\u039b":"Lambda","\u039c":"Mu","\u039d":"Nu","\u039e":"Xi","\u039f":"Omicron","\u03a0":"Pi","\u03a1":"Rho","\u03a3":"Sigma","\u03a4":"Tau","\u03a5":"Upsilon","\u03a6":"Phi","\u03a7":"Chi","\u03a8":"Psi","\u03b1":"alpha","\u03b2":"beta","\u03b3":"gamma","\u03b4":"delta","\u03f5":"epsiv","\u03b6":"zeta","\u03b7":"eta","\u03b8":"theta","\u03b9":"iota","\u03ba":"kappa","\u03bb":"lambda","\u03bc":"mu","\u03bd":"nu","\u03be":"xi","\u03bf":"omicron","\u03c0":"pi","\u03c1":"rho","\u03c2":"sigmav","\u03c3":"sigma","\u03c4":"tau","\u03c5":"upsi","\u03c6":"phi","\u03d5":"phiv","\u03c7":"chi","\u03c8":"psi","\u03c9":"omega","\u03d1":"thetav","\u03d2":"Upsi","\u03d6":"piv","\u03dc":"Gammad","\u03dd":"gammad","\u03f0":"kappav","\u03f1":"rhov","\u03b5":"epsi","\u03f6":"bepsi","\u0401":"IOcy","\u0402":"DJcy","\u0403":"GJcy","\u0404":"Jukcy","\u0405":"DScy","\u0406":"Iukcy","\u0407":"YIcy","\u0408":"Jsercy","\u0409":"LJcy","\u040a":"NJcy","\u040b":"TSHcy","\u040c":"KJcy","\u040e":"Ubrcy","\u040f":"DZcy","\u0410":"Acy","\u0411":"Bcy","\u0412":"Vcy","\u0413":"Gcy","\u0414":"Dcy","\u0415":"IEcy","\u0416":"ZHcy","\u0417":"Zcy","\u0418":"Icy","\u0419":"Jcy","\u041a":"Kcy","\u041b":"Lcy","\u041c":"Mcy","\u041d":"Ncy","\u041e":"Ocy","\u041f":"Pcy","\u0420":"Rcy","\u0421":"Scy","\u0422":"Tcy","\u0423":"Ucy","\u0424":"Fcy","\u0425":"KHcy","\u0426":"TScy","\u0427":"CHcy","\u0428":"SHcy","\u0429":"SHCHcy","\u042a":"HARDcy","\u042b":"Ycy","\u042c":"SOFTcy","\u042d":"Ecy","\u042e":"YUcy","\u042f":"YAcy","\u0430":"acy","\u0431":"bcy","\u0432":"vcy","\u0433":"gcy","\u0434":"dcy","\u0435":"iecy","\u0436":"zhcy","\u0437":"zcy","\u0438":"icy","\u0439":"jcy","\u043a":"kcy","\u043b":"lcy","\u043c":"mcy","\u043d":"ncy","\u043e":"ocy","\u043f":"pcy","\u0440":"rcy","\u0441":"scy","\u0442":"tcy","\u0443":"ucy","\u0444":"fcy","\u0445":"khcy","\u0446":"tscy","\u0447":"chcy","\u0448":"shcy","\u0449":"shchcy","\u044a":"hardcy","\u044b":"ycy","\u044c":"softcy","\u044d":"ecy","\u044e":"yucy","\u044f":"yacy","\u0451":"iocy","\u0452":"djcy","\u0453":"gjcy","\u0454":"jukcy","\u0455":"dscy","\u0456":"iukcy","\u0457":"yicy","\u0458":"jsercy","\u0459":"ljcy","\u045a":"njcy","\u045b":"tshcy","\u045c":"kjcy","\u045e":"ubrcy","\u045f":"dzcy","\u2002":"ensp","\u2003":"emsp","\u2004":"emsp13","\u2005":"emsp14","\u2007":"numsp","\u2008":"puncsp","\u2009":"thinsp","\u200a":"hairsp","\u200b":"ZeroWidthSpace","\u200c":"zwnj","\u200d":"zwj","\u200e":"lrm","\u200f":"rlm","\u2010":"dash","\u2013":"ndash","\u2014":"mdash","\u2015":"horbar","\u2016":"Vert","\u2018":"lsquo","\u2019":"rsquo","\u201a":"sbquo","\u201c":"ldquo","\u201d":"rdquo","\u201e":"bdquo","\u2020":"dagger","\u2021":"Dagger","\u2022":"bull","\u2025":"nldr","\u2026":"mldr","\u2030":"permil","\u2031":"pertenk","\u2032":"prime","\u2033":"Prime","\u2034":"tprime","\u2035":"bprime","\u2039":"lsaquo","\u203a":"rsaquo","\u203e":"oline","\u2041":"caret","\u2043":"hybull","\u2044":"frasl","\u204f":"bsemi","\u2057":"qprime","\u205f":"MediumSpace","\u2060":"NoBreak","\u2061":"af","\u2062":"it","\u2063":"ic","\u20ac":"euro","\u20db":"tdot","\u20dc":"DotDot","\u2102":"Copf","\u2105":"incare","\u210a":"gscr","\u210b":"Hscr","\u210c":"Hfr","\u210d":"Hopf","\u210e":"planckh","\u210f":"hbar","\u2110":"Iscr","\u2111":"Im","\u2112":"Lscr","\u2113":"ell","\u2115":"Nopf","\u2116":"numero","\u2117":"copysr","\u2118":"wp","\u2119":"Popf","\u211a":"Qopf","\u211b":"Rscr","\u211c":"Re","\u211d":"Ropf","\u211e":"rx","\u2122":"trade","\u2124":"Zopf","\u03a9":"ohm","\u2127":"mho","\u2128":"Zfr","\u2129":"iiota","\u212c":"Bscr","\u212d":"Cfr","\u212f":"escr","\u2130":"Escr","\u2131":"Fscr","\u2133":"Mscr","\u2134":"oscr","\u2135":"aleph","\u2136":"beth","\u2137":"gimel","\u2138":"daleth","\u2145":"DD","\u2146":"dd","\u2147":"ee","\u2148":"ii","\u2153":"frac13","\u2154":"frac23","\u2155":"frac15","\u2156":"frac25","\u2157":"frac35","\u2158":"frac45","\u2159":"frac16","\u215a":"frac56","\u215b":"frac18","\u215c":"frac38","\u215d":"frac58","\u215e":"frac78","\u2190":"larr","\u2191":"uarr","\u2192":"rarr","\u2193":"darr","\u2194":"harr","\u2195":"varr","\u2196":"nwarr","\u2197":"nearr","\u2198":"searr","\u2199":"swarr","\u219a":"nlarr","\u219b":"nrarr","\u219d":"rarrw","\u219e":"Larr","\u219f":"Uarr","\u21a0":"Rarr","\u21a1":"Darr","\u21a2":"larrtl","\u21a3":"rarrtl","\u21a4":"mapstoleft","\u21a5":"mapstoup","\u21a6":"map","\u21a7":"mapstodown","\u21a9":"larrhk","\u21aa":"rarrhk","\u21ab":"larrlp","\u21ac":"rarrlp","\u21ad":"harrw","\u21ae":"nharr","\u21b0":"lsh","\u21b1":"rsh","\u21b2":"ldsh","\u21b3":"rdsh","\u21b5":"crarr","\u21b6":"cularr","\u21b7":"curarr","\u21ba":"olarr","\u21bb":"orarr","\u21bc":"lharu","\u21bd":"lhard","\u21be":"uharr","\u21bf":"uharl","\u21c0":"rharu","\u21c1":"rhard","\u21c2":"dharr","\u21c3":"dharl","\u21c4":"rlarr","\u21c5":"udarr","\u21c6":"lrarr","\u21c7":"llarr","\u21c8":"uuarr","\u21c9":"rrarr","\u21ca":"ddarr","\u21cb":"lrhar","\u21cc":"rlhar","\u21cd":"nlArr","\u21ce":"nhArr","\u21cf":"nrArr","\u21d0":"lArr","\u21d1":"uArr","\u21d2":"rArr","\u21d3":"dArr","\u21d4":"iff","\u21d5":"vArr","\u21d6":"nwArr","\u21d7":"neArr","\u21d8":"seArr","\u21d9":"swArr","\u21da":"lAarr","\u21db":"rAarr","\u21dd":"zigrarr","\u21e4":"larrb","\u21e5":"rarrb","\u21f5":"duarr","\u21fd":"loarr","\u21fe":"roarr","\u21ff":"hoarr","\u2200":"forall","\u2201":"comp","\u2202":"part","\u2203":"exist","\u2204":"nexist","\u2205":"empty","\u2207":"Del","\u2208":"in","\u2209":"notin","\u220b":"ni","\u220c":"notni","\u220f":"prod","\u2210":"coprod","\u2211":"sum","\u2212":"minus","\u2213":"mp","\u2214":"plusdo","\u2216":"setmn","\u2217":"lowast","\u2218":"compfn","\u221a":"Sqrt","\u221d":"prop","\u221e":"infin","\u221f":"angrt","\u2220":"ang","\u2221":"angmsd","\u2222":"angsph","\u2223":"mid","\u2224":"nmid","\u2225":"par","\u2226":"npar","\u2227":"and","\u2228":"or","\u2229":"cap","\u222a":"cup","\u222b":"int","\u222c":"Int","\u222d":"tint","\u222e":"oint","\u222f":"Conint","\u2230":"Cconint","\u2231":"cwint","\u2232":"cwconint","\u2233":"awconint","\u2234":"there4","\u2235":"becaus","\u2236":"ratio","\u2237":"Colon","\u2238":"minusd","\u223a":"mDDot","\u223b":"homtht","\u223c":"sim","\u223d":"bsim","\u223e":"ac","\u223f":"acd","\u2240":"wr","\u2241":"nsim","\u2242":"esim","\u2243":"sime","\u2244":"nsime","\u2245":"cong","\u2246":"simne","\u2247":"ncong","\u2248":"ap","\u2249":"nap","\u224a":"ape","\u224b":"apid","\u224c":"bcong","\u224d":"CupCap","\u224e":"bump","\u224f":"bumpe","\u2250":"esdot","\u2251":"eDot","\u2252":"efDot","\u2253":"erDot","\u2254":"colone","\u2255":"ecolon","\u2256":"ecir","\u2257":"cire","\u2259":"wedgeq","\u225a":"veeeq","\u225c":"trie","\u225f":"equest","\u2260":"ne","\u2261":"equiv","\u2262":"nequiv","\u2264":"le","\u2265":"ge","\u2266":"lE","\u2267":"gE","\u2268":"lnE","\u2269":"gnE","\u226a":"Lt","\u226b":"Gt","\u226c":"twixt","\u226d":"NotCupCap","\u226e":"nlt","\u226f":"ngt","\u2270":"nle","\u2271":"nge","\u2272":"lsim","\u2273":"gsim","\u2274":"nlsim","\u2275":"ngsim","\u2276":"lg","\u2277":"gl","\u2278":"ntlg","\u2279":"ntgl","\u227a":"pr","\u227b":"sc","\u227c":"prcue","\u227d":"sccue","\u227e":"prsim","\u227f":"scsim","\u2280":"npr","\u2281":"nsc","\u2282":"sub","\u2283":"sup","\u2284":"nsub","\u2285":"nsup","\u2286":"sube","\u2287":"supe","\u2288":"nsube","\u2289":"nsupe","\u228a":"subne","\u228b":"supne","\u228d":"cupdot","\u228e":"uplus","\u228f":"sqsub","\u2290":"sqsup","\u2291":"sqsube","\u2292":"sqsupe","\u2293":"sqcap","\u2294":"sqcup","\u2295":"oplus","\u2296":"ominus","\u2297":"otimes","\u2298":"osol","\u2299":"odot","\u229a":"ocir","\u229b":"oast","\u229d":"odash","\u229e":"plusb","\u229f":"minusb","\u22a0":"timesb","\u22a1":"sdotb","\u22a2":"vdash","\u22a3":"dashv","\u22a4":"top","\u22a5":"bot","\u22a7":"models","\u22a8":"vDash","\u22a9":"Vdash","\u22aa":"Vvdash","\u22ab":"VDash","\u22ac":"nvdash","\u22ad":"nvDash","\u22ae":"nVdash","\u22af":"nVDash","\u22b0":"prurel","\u22b2":"vltri","\u22b3":"vrtri","\u22b4":"ltrie","\u22b5":"rtrie","\u22b6":"origof","\u22b7":"imof","\u22b8":"mumap","\u22b9":"hercon","\u22ba":"intcal","\u22bb":"veebar","\u22bd":"barvee","\u22be":"angrtvb","\u22bf":"lrtri","\u22c0":"Wedge","\u22c1":"Vee","\u22c2":"xcap","\u22c3":"xcup","\u22c4":"diam","\u22c5":"sdot","\u22c6":"Star","\u22c7":"divonx","\u22c8":"bowtie","\u22c9":"ltimes","\u22ca":"rtimes","\u22cb":"lthree","\u22cc":"rthree","\u22cd":"bsime","\u22ce":"cuvee","\u22cf":"cuwed","\u22d0":"Sub","\u22d1":"Sup","\u22d2":"Cap","\u22d3":"Cup","\u22d4":"fork","\u22d5":"epar","\u22d6":"ltdot","\u22d7":"gtdot","\u22d8":"Ll","\u22d9":"Gg","\u22da":"leg","\u22db":"gel","\u22de":"cuepr","\u22df":"cuesc","\u22e0":"nprcue","\u22e1":"nsccue","\u22e2":"nsqsube","\u22e3":"nsqsupe","\u22e6":"lnsim","\u22e7":"gnsim","\u22e8":"prnsim","\u22e9":"scnsim","\u22ea":"nltri","\u22eb":"nrtri","\u22ec":"nltrie","\u22ed":"nrtrie","\u22ee":"vellip","\u22ef":"ctdot","\u22f0":"utdot","\u22f1":"dtdot","\u22f2":"disin","\u22f3":"isinsv","\u22f4":"isins","\u22f5":"isindot","\u22f6":"notinvc","\u22f7":"notinvb","\u22f9":"isinE","\u22fa":"nisd","\u22fb":"xnis","\u22fc":"nis","\u22fd":"notnivc","\u22fe":"notnivb","\u2305":"barwed","\u2306":"Barwed","\u2308":"lceil","\u2309":"rceil","\u230a":"lfloor","\u230b":"rfloor","\u230c":"drcrop","\u230d":"dlcrop","\u230e":"urcrop","\u230f":"ulcrop","\u2310":"bnot","\u2312":"profline","\u2313":"profsurf","\u2315":"telrec","\u2316":"target","\u231c":"ulcorn","\u231d":"urcorn","\u231e":"dlcorn","\u231f":"drcorn","\u2322":"frown","\u2323":"smile","\u232d":"cylcty","\u232e":"profalar","\u2336":"topbot","\u233d":"ovbar","\u233f":"solbar","\u237c":"angzarr","\u23b0":"lmoust","\u23b1":"rmoust","\u23b4":"tbrk","\u23b5":"bbrk","\u23b6":"bbrktbrk","\u23dc":"OverParenthesis","\u23dd":"UnderParenthesis","\u23de":"OverBrace","\u23df":"UnderBrace","\u23e2":"trpezium","\u23e7":"elinters","\u2423":"blank","\u24c8":"oS","\u2500":"boxh","\u2502":"boxv","\u250c":"boxdr","\u2510":"boxdl","\u2514":"boxur","\u2518":"boxul","\u251c":"boxvr","\u2524":"boxvl","\u252c":"boxhd","\u2534":"boxhu","\u253c":"boxvh","\u2550":"boxH","\u2551":"boxV","\u2552":"boxdR","\u2553":"boxDr","\u2554":"boxDR","\u2555":"boxdL","\u2556":"boxDl","\u2557":"boxDL","\u2558":"boxuR","\u2559":"boxUr","\u255a":"boxUR","\u255b":"boxuL","\u255c":"boxUl","\u255d":"boxUL","\u255e":"boxvR","\u255f":"boxVr","\u2560":"boxVR","\u2561":"boxvL","\u2562":"boxVl","\u2563":"boxVL","\u2564":"boxHd","\u2565":"boxhD","\u2566":"boxHD","\u2567":"boxHu","\u2568":"boxhU","\u2569":"boxHU","\u256a":"boxvH","\u256b":"boxVh","\u256c":"boxVH","\u2580":"uhblk","\u2584":"lhblk","\u2588":"block","\u2591":"blk14","\u2592":"blk12","\u2593":"blk34","\u25a1":"squ","\u25aa":"squf","\u25ab":"EmptyVerySmallSquare","\u25ad":"rect","\u25ae":"marker","\u25b1":"fltns","\u25b3":"xutri","\u25b4":"utrif","\u25b5":"utri","\u25b8":"rtrif","\u25b9":"rtri","\u25bd":"xdtri","\u25be":"dtrif","\u25bf":"dtri","\u25c2":"ltrif","\u25c3":"ltri","\u25ca":"loz","\u25cb":"cir","\u25ec":"tridot","\u25ef":"xcirc","\u25f8":"ultri","\u25f9":"urtri","\u25fa":"lltri","\u25fb":"EmptySmallSquare","\u25fc":"FilledSmallSquare","\u2605":"starf","\u2606":"star","\u260e":"phone","\u2640":"female","\u2642":"male","\u2660":"spades","\u2663":"clubs","\u2665":"hearts","\u2666":"diams","\u266a":"sung","\u266d":"flat","\u266e":"natur","\u266f":"sharp","\u2713":"check","\u2717":"cross","\u2720":"malt","\u2736":"sext","\u2758":"VerticalSeparator","\u2772":"lbbrk","\u2773":"rbbrk","\u27e6":"lobrk","\u27e7":"robrk","\u27e8":"lang","\u27e9":"rang","\u27ea":"Lang","\u27eb":"Rang","\u27ec":"loang","\u27ed":"roang","\u27f5":"xlarr","\u27f6":"xrarr","\u27f7":"xharr","\u27f8":"xlArr","\u27f9":"xrArr","\u27fa":"xhArr","\u27fc":"xmap","\u27ff":"dzigrarr","\u2902":"nvlArr","\u2903":"nvrArr","\u2904":"nvHarr","\u2905":"Map","\u290c":"lbarr","\u290d":"rbarr","\u290e":"lBarr","\u290f":"rBarr","\u2910":"RBarr","\u2911":"DDotrahd","\u2912":"UpArrowBar","\u2913":"DownArrowBar","\u2916":"Rarrtl","\u2919":"latail","\u291a":"ratail","\u291b":"lAtail","\u291c":"rAtail","\u291d":"larrfs","\u291e":"rarrfs","\u291f":"larrbfs","\u2920":"rarrbfs","\u2923":"nwarhk","\u2924":"nearhk","\u2925":"searhk","\u2926":"swarhk","\u2927":"nwnear","\u2928":"toea","\u2929":"tosa","\u292a":"swnwar","\u2933":"rarrc","\u2935":"cudarrr","\u2936":"ldca","\u2937":"rdca","\u2938":"cudarrl","\u2939":"larrpl","\u293c":"curarrm","\u293d":"cularrp","\u2945":"rarrpl","\u2948":"harrcir","\u2949":"Uarrocir","\u294a":"lurdshar","\u294b":"ldrushar","\u294e":"LeftRightVector","\u294f":"RightUpDownVector","\u2950":"DownLeftRightVector","\u2951":"LeftUpDownVector","\u2952":"LeftVectorBar","\u2953":"RightVectorBar","\u2954":"RightUpVectorBar","\u2955":"RightDownVectorBar","\u2956":"DownLeftVectorBar","\u2957":"DownRightVectorBar","\u2958":"LeftUpVectorBar","\u2959":"LeftDownVectorBar","\u295a":"LeftTeeVector","\u295b":"RightTeeVector","\u295c":"RightUpTeeVector","\u295d":"RightDownTeeVector","\u295e":"DownLeftTeeVector","\u295f":"DownRightTeeVector","\u2960":"LeftUpTeeVector","\u2961":"LeftDownTeeVector","\u2962":"lHar","\u2963":"uHar","\u2964":"rHar","\u2965":"dHar","\u2966":"luruhar","\u2967":"ldrdhar","\u2968":"ruluhar","\u2969":"rdldhar","\u296a":"lharul","\u296b":"llhard","\u296c":"rharul","\u296d":"lrhard","\u296e":"udhar","\u296f":"duhar","\u2970":"RoundImplies","\u2971":"erarr","\u2972":"simrarr","\u2973":"larrsim","\u2974":"rarrsim","\u2975":"rarrap","\u2976":"ltlarr","\u2978":"gtrarr","\u2979":"subrarr","\u297b":"suplarr","\u297c":"lfisht","\u297d":"rfisht","\u297e":"ufisht","\u297f":"dfisht","\u2985":"lopar","\u2986":"ropar","\u298b":"lbrke","\u298c":"rbrke","\u298d":"lbrkslu","\u298e":"rbrksld","\u298f":"lbrksld","\u2990":"rbrkslu","\u2991":"langd","\u2992":"rangd","\u2993":"lparlt","\u2994":"rpargt","\u2995":"gtlPar","\u2996":"ltrPar","\u299a":"vzigzag","\u299c":"vangrt","\u299d":"angrtvbd","\u29a4":"ange","\u29a5":"range","\u29a6":"dwangle","\u29a7":"uwangle","\u29a8":"angmsdaa","\u29a9":"angmsdab","\u29aa":"angmsdac","\u29ab":"angmsdad","\u29ac":"angmsdae","\u29ad":"angmsdaf","\u29ae":"angmsdag","\u29af":"angmsdah","\u29b0":"bemptyv","\u29b1":"demptyv","\u29b2":"cemptyv","\u29b3":"raemptyv","\u29b4":"laemptyv","\u29b5":"ohbar","\u29b6":"omid","\u29b7":"opar","\u29b9":"operp","\u29bb":"olcross","\u29bc":"odsold","\u29be":"olcir","\u29bf":"ofcir","\u29c0":"olt","\u29c1":"ogt","\u29c2":"cirscir","\u29c3":"cirE","\u29c4":"solb","\u29c5":"bsolb","\u29c9":"boxbox","\u29cd":"trisb","\u29ce":"rtriltri","\u29cf":"LeftTriangleBar","\u29d0":"RightTriangleBar","\u29dc":"iinfin","\u29dd":"infintie","\u29de":"nvinfin","\u29e3":"eparsl","\u29e4":"smeparsl","\u29e5":"eqvparsl","\u29eb":"lozf","\u29f4":"RuleDelayed","\u29f6":"dsol","\u2a00":"xodot","\u2a01":"xoplus","\u2a02":"xotime","\u2a04":"xuplus","\u2a06":"xsqcup","\u2a0c":"qint","\u2a0d":"fpartint","\u2a10":"cirfnint","\u2a11":"awint","\u2a12":"rppolint","\u2a13":"scpolint","\u2a14":"npolint","\u2a15":"pointint","\u2a16":"quatint","\u2a17":"intlarhk","\u2a22":"pluscir","\u2a23":"plusacir","\u2a24":"simplus","\u2a25":"plusdu","\u2a26":"plussim","\u2a27":"plustwo","\u2a29":"mcomma","\u2a2a":"minusdu","\u2a2d":"loplus","\u2a2e":"roplus","\u2a2f":"Cross","\u2a30":"timesd","\u2a31":"timesbar","\u2a33":"smashp","\u2a34":"lotimes","\u2a35":"rotimes","\u2a36":"otimesas","\u2a37":"Otimes","\u2a38":"odiv","\u2a39":"triplus","\u2a3a":"triminus","\u2a3b":"tritime","\u2a3c":"iprod","\u2a3f":"amalg","\u2a40":"capdot","\u2a42":"ncup","\u2a43":"ncap","\u2a44":"capand","\u2a45":"cupor","\u2a46":"cupcap","\u2a47":"capcup","\u2a48":"cupbrcap","\u2a49":"capbrcup","\u2a4a":"cupcup","\u2a4b":"capcap","\u2a4c":"ccups","\u2a4d":"ccaps","\u2a50":"ccupssm","\u2a53":"And","\u2a54":"Or","\u2a55":"andand","\u2a56":"oror","\u2a57":"orslope","\u2a58":"andslope","\u2a5a":"andv","\u2a5b":"orv","\u2a5c":"andd","\u2a5d":"ord","\u2a5f":"wedbar","\u2a66":"sdote","\u2a6a":"simdot","\u2a6d":"congdot","\u2a6e":"easter","\u2a6f":"apacir","\u2a70":"apE","\u2a71":"eplus","\u2a72":"pluse","\u2a73":"Esim","\u2a74":"Colone","\u2a75":"Equal","\u2a77":"eDDot","\u2a78":"equivDD","\u2a79":"ltcir","\u2a7a":"gtcir","\u2a7b":"ltquest","\u2a7c":"gtquest","\u2a7d":"les","\u2a7e":"ges","\u2a7f":"lesdot","\u2a80":"gesdot","\u2a81":"lesdoto","\u2a82":"gesdoto","\u2a83":"lesdotor","\u2a84":"gesdotol","\u2a85":"lap","\u2a86":"gap","\u2a87":"lne","\u2a88":"gne","\u2a89":"lnap","\u2a8a":"gnap","\u2a8b":"lEg","\u2a8c":"gEl","\u2a8d":"lsime","\u2a8e":"gsime","\u2a8f":"lsimg","\u2a90":"gsiml","\u2a91":"lgE","\u2a92":"glE","\u2a93":"lesges","\u2a94":"gesles","\u2a95":"els","\u2a96":"egs","\u2a97":"elsdot","\u2a98":"egsdot","\u2a99":"el","\u2a9a":"eg","\u2a9d":"siml","\u2a9e":"simg","\u2a9f":"simlE","\u2aa0":"simgE","\u2aa1":"LessLess","\u2aa2":"GreaterGreater","\u2aa4":"glj","\u2aa5":"gla","\u2aa6":"ltcc","\u2aa7":"gtcc","\u2aa8":"lescc","\u2aa9":"gescc","\u2aaa":"smt","\u2aab":"lat","\u2aac":"smte","\u2aad":"late","\u2aae":"bumpE","\u2aaf":"pre","\u2ab0":"sce","\u2ab3":"prE","\u2ab4":"scE","\u2ab5":"prnE","\u2ab6":"scnE","\u2ab7":"prap","\u2ab8":"scap","\u2ab9":"prnap","\u2aba":"scnap","\u2abb":"Pr","\u2abc":"Sc","\u2abd":"subdot","\u2abe":"supdot","\u2abf":"subplus","\u2ac0":"supplus","\u2ac1":"submult","\u2ac2":"supmult","\u2ac3":"subedot","\u2ac4":"supedot","\u2ac5":"subE","\u2ac6":"supE","\u2ac7":"subsim","\u2ac8":"supsim","\u2acb":"subnE","\u2acc":"supnE","\u2acf":"csub","\u2ad0":"csup","\u2ad1":"csube","\u2ad2":"csupe","\u2ad3":"subsup","\u2ad4":"supsub","\u2ad5":"subsub","\u2ad6":"supsup","\u2ad7":"suphsub","\u2ad8":"supdsub","\u2ad9":"forkv","\u2ada":"topfork","\u2adb":"mlcp","\u2ae4":"Dashv","\u2ae6":"Vdashl","\u2ae7":"Barv","\u2ae8":"vBar","\u2ae9":"vBarv","\u2aeb":"Vbar","\u2aec":"Not","\u2aed":"bNot","\u2aee":"rnmid","\u2aef":"cirmid","\u2af0":"midcir","\u2af1":"topcir","\u2af2":"nhpar","\u2af3":"parsim","\u2afd":"parsl","\ufb00":"fflig","\ufb01":"filig","\ufb02":"fllig","\ufb03":"ffilig","\ufb04":"ffllig","\u{1d49c}":"Ascr","\u{1d49e}":"Cscr","\u{1d49f}":"Dscr","\u{1d4a2}":"Gscr","\u{1d4a5}":"Jscr","\u{1d4a6}":"Kscr","\u{1d4a9}":"Nscr","\u{1d4aa}":"Oscr","\u{1d4ab}":"Pscr","\u{1d4ac}":"Qscr","\u{1d4ae}":"Sscr","\u{1d4af}":"Tscr","\u{1d4b0}":"Uscr","\u{1d4b1}":"Vscr","\u{1d4b2}":"Wscr","\u{1d4b3}":"Xscr","\u{1d4b4}":"Yscr","\u{1d4b5}":"Zscr","\u{1d4b6}":"ascr","\u{1d4b7}":"bscr","\u{1d4b8}":"cscr","\u{1d4b9}":"dscr","\u{1d4bb}":"fscr","\u{1d4bd}":"hscr","\u{1d4be}":"iscr","\u{1d4bf}":"jscr","\u{1d4c0}":"kscr","\u{1d4c1}":"lscr","\u{1d4c2}":"mscr","\u{1d4c3}":"nscr","\u{1d4c5}":"pscr","\u{1d4c6}":"qscr","\u{1d4c7}":"rscr","\u{1d4c8}":"sscr","\u{1d4c9}":"tscr","\u{1d4ca}":"uscr","\u{1d4cb}":"vscr","\u{1d4cc}":"wscr","\u{1d4cd}":"xscr","\u{1d4ce}":"yscr","\u{1d4cf}":"zscr","\u{1d504}":"Afr","\u{1d505}":"Bfr","\u{1d507}":"Dfr","\u{1d508}":"Efr","\u{1d509}":"Ffr","\u{1d50a}":"Gfr","\u{1d50d}":"Jfr","\u{1d50e}":"Kfr","\u{1d50f}":"Lfr","\u{1d510}":"Mfr","\u{1d511}":"Nfr","\u{1d512}":"Ofr","\u{1d513}":"Pfr","\u{1d514}":"Qfr","\u{1d516}":"Sfr","\u{1d517}":"Tfr","\u{1d518}":"Ufr","\u{1d519}":"Vfr","\u{1d51a}":"Wfr","\u{1d51b}":"Xfr","\u{1d51c}":"Yfr","\u{1d51e}":"afr","\u{1d51f}":"bfr","\u{1d520}":"cfr","\u{1d521}":"dfr","\u{1d522}":"efr","\u{1d523}":"ffr","\u{1d524}":"gfr","\u{1d525}":"hfr","\u{1d526}":"ifr","\u{1d527}":"jfr","\u{1d528}":"kfr","\u{1d529}":"lfr","\u{1d52a}":"mfr","\u{1d52b}":"nfr","\u{1d52c}":"ofr","\u{1d52d}":"pfr","\u{1d52e}":"qfr","\u{1d52f}":"rfr","\u{1d530}":"sfr","\u{1d531}":"tfr","\u{1d532}":"ufr","\u{1d533}":"vfr","\u{1d534}":"wfr","\u{1d535}":"xfr","\u{1d536}":"yfr","\u{1d537}":"zfr","\u{1d538}":"Aopf","\u{1d539}":"Bopf","\u{1d53b}":"Dopf","\u{1d53c}":"Eopf","\u{1d53d}":"Fopf","\u{1d53e}":"Gopf","\u{1d540}":"Iopf","\u{1d541}":"Jopf","\u{1d542}":"Kopf","\u{1d543}":"Lopf","\u{1d544}":"Mopf","\u{1d546}":"Oopf","\u{1d54a}":"Sopf","\u{1d54b}":"Topf","\u{1d54c}":"Uopf","\u{1d54d}":"Vopf","\u{1d54e}":"Wopf","\u{1d54f}":"Xopf","\u{1d550}":"Yopf","\u{1d552}":"aopf","\u{1d553}":"bopf","\u{1d554}":"copf","\u{1d555}":"dopf","\u{1d556}":"eopf","\u{1d557}":"fopf","\u{1d558}":"gopf","\u{1d559}":"hopf","\u{1d55a}":"iopf","\u{1d55b}":"jopf","\u{1d55c}":"kopf","\u{1d55d}":"lopf","\u{1d55e}":"mopf","\u{1d55f}":"nopf","\u{1d560}":"oopf","\u{1d561}":"popf","\u{1d562}":"qopf","\u{1d563}":"ropf","\u{1d564}":"sopf","\u{1d565}":"topf","\u{1d566}":"uopf","\u{1d567}":"vopf","\u{1d568}":"wopf","\u{1d569}":"xopf","\u{1d56a}":"yopf","\u{1d56b}":"zopf"}</script>
   </head>
   <body>
     <h1>
       LNN's swiss-knife util
     </h1>
-    <div id="codeDiv">
-      <div id="codeToolbarDiv">
-        <button onclick="codeCm.focus(),codeCm.execCommand('selectAll')">
-          select all
-        </button>
-        <button onclick="codeCm.focus(),codeCm.execCommand('undo')">
-          undo
-        </button>
-        <button onclick="codeCm.focus(),codeCm.execCommand('redo')">
-          redo
-        </button>
-        <button onclick="codeCm.focus(),codeCm.execCommand('defaultTab')">
-          tab
-        </button>
+    <div id=codeDiv>
+      <div id=codeToolbarDiv>
+        <button id=btn-cm-selectall>select all</button>
+        <button id=btn-cm-undo>undo</button>
+        <button id=btn-cm-redo>redo</button>
+        <button id=btn-cm-tab>tab</button>
       </div>
     </div>
     <div style="margin:8px 0">
       <div>
         out &larr;
-        <button onclick="try{let __r=eval(codebox.value);out.value=__r}catch(e){out.value=e}">
-          eval code
-        </button>
-        <button onclick="var r='',d;for(d of text.value){let c=d.codePointAt(0).toString(16),m=c.length;r+=m&gt;4?`\\u{${c}}`:m===4?`\\u${c}`:m===3?`\\u0${c}`:m===2?`\\x${c}`:`\\x0${c}`}out.value=`&quot;${r}&quot;`">
-          code point escape text
-        </button>
-        <button onclick="let _td=JSON.stringify(text.value);codebox.value=`text.value=${_td};\ncodebox.value=codebox.value.slice(16+codebox.value.indexOf(\&quot;\\\&quot;SoulLS dump\\\&quot;;\&quot;));throw&quot;SoulLS dump&quot;;\n\n${codebox.value}`">
-          dump code &amp; text
-        </button>
+        <button id=btn-eval>eval code</button>
+        <button id=btn-codepoints>code point escape text</button>
+        <button id=btn-dump>dump code &amp; text</button>
       </div>
       <div>
         out &larr; utf-8 + base64
-        <button onclick="out.value=Base64LNN.encodeUTF8(text.value)">
-          encode
-        </button>
-        <button onclick="out.value=Base64LNN.decodeUTF8(text.value)">
-          decode
-        </button>
+        <button id=btn-b64e>encode</button>
+        <button id=btn-b64d>decode</button>
         text
       </div>
       <div>
         out &larr; uri-component
-        <button onclick="out.value=encodeURIComponent(text.value)">
-          encode
-        </button>
-        <button onclick="out.value=decodeURIComponent(text.value)">
-          decode
-        </button>
+        <button id=btn-urie>encode</button>
+        <button id=btn-urid>decode</button>
         text
       </div>
       <div>
         out &larr; html
-        <button onclick="out.value=text.value.replace(/&amp;/g,'&amp;amp;').replace(/&lt;/g,'&amp;lt;').replace(/&gt;/g,'&amp;gt;')">
-          escape &amp;&lt;&gt;
-        </button>
-        <button onclick="out.value=text.value.replace(/&amp;/g,'&amp;amp;').replace(/&quot;/g,'&amp;quot;')">
-          escape &amp;"
-        </button>
-        <button onclick="out.value=text.value.replace(/&amp;/g,'&amp;amp;').replace(/'/g,'&amp;apos;')">
-          escape &amp;'
-        </button>
-        <button onclick="let s='';for(let c of text.value){let d=c.codePointAt(0);s+=d<0x80?c:c in HTML_ENTITIES_NONASCII?`&amp;${HTML_ENTITIES_NONASCII[c]};`:`&amp;#${d};`}out.value=s">
-          encode nonascii
-        </button>
-        <button onclick="let e=document.createElement(&quot;div&quot;);out.value=text.value.replace(/&amp;\w[\d\w]+;?|&amp;#\d+;?|&amp;#x[\dA-Fa-f]+;?/g,c=>(e.innerHTML=c,e.textContent))">
-          unescape
-        </button>
+        <button id=btn-htmlenteg>escape &amp;&lt;&gt;</button>
+        <button id=btn-htmlented>escape &amp;"</button>
+        <button id=btn-htmlentes>escape &amp;'</button>
+        <button id=btn-htmlentd>unescape</button>
         text
       </div>
       <div>
         out &larr; read
-        <button onclick="file.click()">
-          #file
-        </button>
+        <button id=btn-flie>#file</button>
         as
-        <button onclick="var r=new FileReader();r.onload=()=>{out.value=r.result};r.readAsText(file.files[0])">
-          text
-        </button>
-        <button onclick="var r=new FileReader();r.onload=()=>{out.value=r.result};r.readAsDataURL(file.files[0])">
-          data url
-        </button>
+        <button id=btn-filet>text</button>
+        <button id=btn-filed>data url</button>
+        |
+        <button id=btn-fileb>to object url</button>
       </div>
       <div>
         swap
-        <button onclick="[codebox.value,out.value]=[out.value,codebox.value]">
-          code, out
-        </button>
-        <button onclick="[text.value,out.value]=[out.value,text.value]">
-          text, out
-        </button>
-        <button onclick="[codebox.value,text.value]=[text.value,codebox.value]">
-          code, text
-        </button>
+        <button id=btn-swapco>code, out</button>
+        <button id=btn-swapto>text, out</button>
+        <button id=btn-swapct>code, text</button>
       </div>
     </div>
-    <div id="textAndOut">
-      <textarea id="text" placeholder="#text"></textarea>
-      <textarea id="out" placeholder="#out" readonly></textarea>
+    <div id=textAndOut>
+      <textarea id=text placeholder="#text"></textarea>
+      <textarea id=out placeholder="#out" readonly></textarea>
     </div>
-    <input type="file" id="file" style="display:none">
+    <fieldset id=myDivWrapper><legend>#myDiv</legend>
+      <div id=myDiv></div>
+    </fieldset>
+    <input type=file id=file style="display:none">
     <script>
-      getElementsLNN();
-      var codebox = {
-        get value() {
-          return codeCm.getValue();
-        },
-        set value(v) {
-          codeCm.setValue(v);
+      function $$$(id) { return document.getElementById(id) }
+      ;(function (){
+        const codeCm = new CodeMirror($$$("codeDiv"), {
+          lineNumbers: true,
+          lineWrapping: true,
+          indentUnit: 2
+        })
+        const $code = window.codebox = {
+          get value() {
+            return codeCm.getValue()
+          },
+          set value(v) {
+            codeCm.setValue(v)
+          }
         }
-      };
-      var codeCm = new CodeMirror(codeDiv, {
-        lineNumbers: true,
-        lineWrapping: true,
-        indentUnit: 4
-      });
+
+        const $text = window.text = $$$("text")
+        const $out = window.out = $$$("out")
+        const $myDiv = window.myDiv = $$$("myDiv")
+        const $file = window.file = $$$("file")
+
+        const SoulLS = window.SoulLS = {
+          $code: $code,
+          get code() {
+            return codeCm.getValue()
+          },
+          set code(val) {
+            codeCm.setValue(val)
+          },
+          $text: $text,
+          get text() {
+            return $text.value
+          },
+          set text(val) {
+            $text.value = val
+          },
+          $out: $out,
+          get out() {
+            return $out.value
+          },
+          set out(val) {
+            showEvalOut = false
+            $out.value = val
+          },
+          $file: $file,
+          get file() {
+            return $file.files[0]
+          },
+          $myDiv: $myDiv,
+          myDiv: $myDiv
+        }
+
+        function addAction(id, handler) {
+          $$$("btn-" + id).addEventListener("click", () => { handler() })
+        }
+
+        addAction("cm-selectall", () => {
+          codeCm.focus()
+          codeCm.execCommand('selectAll')
+        })
+        addAction("cm-undo", () => {
+          codeCm.focus()
+          codeCm.execCommand('undo')
+        })
+        addAction("cm-redo", () => {
+          codeCm.focus()
+          codeCm.execCommand('redo')
+        })
+        addAction("cm-tab", () => {
+          codeCm.focus()
+          codeCm.execCommand('defaultTab')
+        })
+
+        var showEvalOut = true
+        addAction("eval", () => {
+          SoulLS.out = ""
+          showEvalOut = true
+          try {
+            let __result = String(eval(codebox.value))
+            if (showEvalOut) SoulLS.out = __result
+          } catch (err) {
+            SoulLS.out = String(err)
+          }
+        })
+
+        function codePointToEscape(cp) {
+          let hex = cp.toString(16)
+          let len = hex.length
+          if (hex === 0) return "\\0"
+          if (len === 1) return `\\x0${hex}`
+          if (len === 2) return `\\x${hex}`
+          if (len === 3) return `\\u0${hex}`
+          if (len === 4) return `\\u${hex}`
+          return `\\u{${hex}}`
+        }
+        addAction("codepoints", () => {
+          var s = ""
+          for (let chara of SoulLS.text)
+            s += codePointToEscape(chara.codePointAt(0))
+          SoulLS.out = `"${s}"`
+        })
+
+        addAction("dump", () => {
+          let restorer = "", data = ""
+          if (SoulLS.text) {
+            restorer += "SoulLS.text=SoulLS.code.match(/\\/\\*BEGIN TEXT\\/\\*\\n([^]*?)\\n\\/\\*END TEXT\\*\\//)[1].replace(/\\/[\\\\]+\\*|\\*[\\\\]+\\//g, s=>s[0]+s.slice(2));"
+            data +=
+              "/*BEGIN TEXT/*\n" +
+              SoulLS.text.replace(/\/[\\]*\*|\*[\\]*\//g, e => `${e[0]}\\${e.slice(1)}`) +
+              "\n/*END TEXT*/\n"
+          }
+          if (SoulLS.code) {
+            restorer += "SoulLS.code=SoulLS.code.match(/\\/\\*BEGIN CODE\\*\\/\\n([^]*)/)[1];"
+            data += "/*BEGIN CODE*/\n" + SoulLS.code
+          }
+          SoulLS.out = "/*SoulLS dump*/" + restorer + 'throw"";\n' + data
+        })
+
+        addAction("b64e", () => {
+          SoulLS.out = Base64LNN.encodeUTF8(SoulLS.text)
+        })
+        addAction("b64d", () => {
+          SoulLS.out = Base64LNN.decodeUTF8(SoulLS.text)
+        })
+
+        addAction("urie", () => {
+          SoulLS.out = encodeURIComponent(SoulLS.text)
+        })
+        addAction("urid", () => {
+          SoulLS.out = decodeURIComponent(SoulLS.text)
+        })
+
+        addAction("htmlenteg", () => {
+          SoulLS.out = SoulLS.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        })
+        addAction("htmlented", () => {
+          SoulLS.out = SoulLS.text.replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+        })
+        addAction("htmlentes", () => {
+          SoulLS.out = SoulLS.text.replace(/&/g,'&amp;').replace(/'/g,'&apos;')
+        })
+        addAction("htmlentd", () => {
+          let $e = document.createElement("div")
+          SoulLS.out = SoulLS.text.replace(/&\w[\d\w]+;?|&#\d+;?|&#x[\dA-Fa-f]+;?/g, c => {
+            $e.innerHTML = c
+            return $e.textContent
+          })
+        })
+
+        addAction("flie", () => {
+          file.click()
+        })
+        addAction("filet", () => {
+          var r = new FileReader()
+          r.onload = () => {
+            SoulLS.out = r.result
+          }
+          r.readAsText(file.files[0])
+        })
+        addAction("filed", () => {
+          var r = new FileReader()
+          r.onload = () => {
+            SoulLS.out = r.result
+          }
+          r.readAsDataURL(file.files[0])
+        })
+        addAction("fileb", () => {
+          SoulLS.out = window.URL.createObjectURL(SoulLS.file)
+        })
+
+        addAction("swapco", () => {
+          ;[SoulLS.code, SoulLS.out] = [SoulLS.out, SoulLS.code]
+        })
+        addAction("swapto", () => {
+          ;[SoulLS.text, SoulLS.out] = [SoulLS.out, SoulLS.text]
+        })
+        addAction("swapct", () => {
+          ;[SoulLS.code, SoulLS.text] = [SoulLS.text, SoulLS.code]
+        })
+      })()
     </script>
   </body>
 </html>
