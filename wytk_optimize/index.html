@@ -1,243 +1,81 @@
 <!DOCTYPE html>
-<html lang="zh-cmn-Hans">
+<html lang=zh-cmn-Hans>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="format-detection" content="telephone=no">
-  <meta name="robots" content="noindex">
-  <link rel="stylesheet" href="/css/soul_bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
-  <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/viewerjs/1.10.0/viewer.css">
-  <link rel="stylesheet" href="/css/commons.css">
-  <link rel="icon" href="/site_icon.png">
-  <link rel="shortcut icon" href="/site_icon.png">
-  <link rel="apple-touch-icon" href="/site_icon.png" sizes="160x160">
-  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/vue-resource/1.5.1/vue-resource.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/viewerjs/1.10.0/viewer.js"></script>
-  <script src="/js/components.min.js"></script>
-  <title>无影坦克LNN版</title>
+  <meta charset=utf-8>
+  <title>施工中 - 灵魂小站</title>
+  <meta name=viewport content="width=device-width, initial-scale=1">
+  <link rel=stylesheet
+    href="https://dgck81lnn.github.io/bootstrap-lnn/dist/bootstrap-lnn.min.css">
   <style>
-    .custom-file-input:lang(zh-cmn-Hans) ~ .custom-file-label::after {
-      content: '浏览';
-    }
-    .section {
-      min-width: 267px;
-      max-width: 500px;
-      margin: 1rem auto;
-    }
-    #decoder-results {
-      overflow-x: auto;
-    }
-    .decoder-result-preview {
-      background: #eee;
-      width: 5rem;
-      height: 5rem;
-      box-sizing: content-box;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .decoder-result-preview img {
-      max-width: 5rem;
-      max-height: 5rem;
-      margin: auto;
-    }
-    .decoder-result-text {
-      flex-grow: 1;
+    body {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: space-around;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background-color: rgba(51, 191, 171, 33%);
+    }
+    #main {
+      width: 20rem;
+      background-color: var(--bs-light);
+      color: var(--bs-dark);
+    }
+    #icon {
+      color: var(--bs-danger);
+      width: 20vh;
+      height: 20vh;
+      filter: drop-shadow(0 0.125rem 0.25rem rgba(var(--bs-black-rgb), .075));
+    }
+    #links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    #links li {
       margin: 0 0.5rem;
     }
-    .decoder-result-actions {
-      flex: 0 0 auto;
-      width: 5em;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-    }
-    #decoder-add {
-      margin-top: 1rem;
-      height: 5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .can-drag-into {
-      transition: filter 0.5s;
-    }
-    .can-drag-into.drag-entered {
-      filter: contrast(0.8);
+    @media (prefers-color-scheme: dark) {
+      html {
+        background-color: black;
+      }
+      #main {
+        background-color: var(--bs-dark);
+        color: var(--bs-light);
+      }
     }
   </style>
 </head>
-
-<body>
-  <div id="app">
-    <p v-if="false">
-      如果这条消息一直显示，说明脚本加载失败或运行出错，可能是因为您的浏览器不支持ECMAScript
-      2015。
-    </p>
-    <soul-header></soul-header>
-    <soul-main>
+<body lang=zh-cmn-Hans>
+  <div id=main class="my-3 p-4 rounded border shadow">
+    <main>
+      <svg id=icon class="bi bi-cone-striped mb-3" xmlns="http://www.w3.org/2000/svg"
+        width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+        <path d="m9.97 4.88.953 3.811C10.159 8.878 9.14 9 8 9c-1.14 0-2.158-.122-2.923-.309L6.03 4.88C6.635 4.957 7.3 5 8 5s1.365-.043 1.97-.12zm-.245-.978L8.97.88C8.718-.13 7.282-.13 7.03.88L6.275 3.9C6.8 3.965 7.382 4 8 4c.618 0 1.2-.036 1.725-.098zm4.396 8.613a.5.5 0 0 1 .037.96l-6 2a.5.5 0 0 1-.316 0l-6-2a.5.5 0 0 1 .037-.96l2.391-.598.565-2.257c.862.212 1.964.339 3.165.339s2.303-.127 3.165-.339l.565 2.257 2.391.598z"/>
+      </svg>
       <header>
-        <h1>无影坦克LNN版</h1>
-        <span class=soul-p2>by <a href="https://tieba.baidu.com/home/main?un=DGCK81LNN">DGCK81LNN</a></span>
+        <h1 class="display-6" lang=en>Under construction</h1>
+        <h1 class="display-2">施工中</h1>
       </header>
-      <p class="soul-p1">本程序为测试版，许多功能尚不完善，敬请期待正式版发布！</p>
-      <p class="soul-p1 text-danger">免责声明：本页面仅供技术研究使用，使用者做出的行为及后果作者概不负责！</p>
-      <p>电脑用户可以安装<a href="tieba_tank_decoder.user.js">贴吧解码油猴脚本</a>，可直接从帖子页面解码，无需点开大图！（油猴插件的安装方法请自行学习，这里不再赘述。）</p>
-      <p>2021-08-28：由于搁置太久，我决定把只做了一半的新版本更新出来，这个新版本还没有制作坦克的功能，请大家暂时使用其他工厂制作坦克。不过，现在这个版本可以批量现形了！</p>
-      <div id=wytkapp>
-        <b-card
-          :class="{ 'section': true, 'can-drag-into': true, 'drag-entered': isDraggingIntoDecoder }"
-          @dragenter="decoderOnDragEnter"
-          @dragleave="decoderOnDragLeave"
-          @dragover="decoderOnDragOver"
-          @drop="decoderOnDrop"
-        >
-          <template #header>坦克现形</template>
-          <b-row>
-            <b-col cols=6>
-              <b-button variant=primary block :disabled="decoder.length === 0" @click="decoderSaveAll">
-                <b-icon icon=download aria-hidden=true></b-icon>
-                全部保存
-              </b-button>
-            </b-col>
-            <b-col cols=6>
-              <b-button variant=danger block :disabled="decoder.length === 0" @click="decoderDeleteAll">
-                <b-icon icon=trash aria-hidden=true></b-icon>
-                全部清空
-              </b-button>
-            </b-col>
-          </b-row>
-          <div id="decoder-results">
-            <table class="mt-4" v-if="decoder.length">
-              <tr class="decoder-result" v-for="(task, i) in decoder">
-                <td>
-                  <div class="decoder-result-preview">
-                    <b-img :src="task.imageURL"></b-img>
-                  </div>
-                </td>
-                <td>
-                  <b-icon icon=arrow-right-short></b-icon>
-                </td>
-                <td v-if="!task.result" colspan=3>
-                  <div class="decoder-result-text">
-                    <div>正在处理……</div>
-                  </div>
-                </td>
-                <template v-else-if="isError(task.result)">
-                  <td colspan=2>
-                    <div class="decoder-result-text">
-                      <div>{{ task.result }}</div>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="decoder-result-actions">
-                      <b-button variant=danger size=sm @click="decoderDeleteTask(i)">
-                        <b-icon icon=x-circle aria-hidden=true></b-icon>
-                        忽略
-                      </b-button>
-                    </div>
-                  </td>
-                </template>
-                <template v-else>
-                  <td>
-                    <div class="decoder-result-preview">
-                      <b-img :src="task.resultURL"></b-img>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="decoder-result-text">
-                      <div class="text-break">{{ task.result.name }}</div>
-                      <div>{{ formatSize(task.result.size) }}</div>
-                    </div>
-                  </td>
-                  <td>
-                    <div class="decoder-result-actions">
-                      <b-button variant=primary size=sm @click="decoderSaveResult(i)">
-                        <b-icon icon=download aria-hidden=true></b-icon>
-                        保存
-                      </b-button>
-                      <b-button variant=danger size=sm @click="decoderDeleteTask(i)">
-                        <b-icon icon=trash aria-hidden=true></b-icon>
-                        舍弃
-                      </b-button>
-                    </div>
-                  </td>
-                </template>
-              </tr>
-            </table>
-          </div>
-          <div
-            id=decoder-add
-            class="border"
-            @click="decoderSelectFiles"
-            role=button
-            tabindex=0
-          >点击这里或拖拽文件到此处</div>
-        </b-card>
-        <!--<b-card class="section">
-          <template #header>制作坦克</template>
-          <b-row>
-            <b-col cols=6>
-              <b-form-group>
-                <template #label>表图</template>
-                <div class=filepicker>一个文件选取器</div>
-              </b-form-group>
-            </b-col>
-            <b-col cols=6>
-              <b-form-group>
-                <template #label>里图</template>
-                <div class=filepicker>一个文件选取器</div>
-              </b-form-group>
-            </b-col>
-          </b-row>
-          <b-form-group disabled label-cols="3">
-            <template #label>隐写深度</template>
-            <b-radio-group buttons class="w-100">
-              <b-radio :value=1>1</b-radio>
-              <b-radio :value=2>2</b-radio>
-              <b-radio :value=3>3</b-radio>
-              <b-radio :value=4>4</b-radio>
-              <b-radio :value=5>5</b-radio>
-              <b-radio :value=6>6</b-radio>
-              <b-radio :value=7>7</b-radio>
-            </b-radio-group>
-          </b-form-group>
-          <b-form-group>
-            <template #label>预览</template>
-            <b-img></b-img>
-          </b-form-group>
-          <b-alert show variant=warning>生成的坦克图超过10MB，发送到贴吧将被压缩！</b-alert>
-          <b-button block variant=primary>
-            <b-icon icon=download aria-hidden=true></b-icon>
-            保存
-          </b-button>
-        </b-card>-->
-      </div>
-      <b-card>
-        <template #header>更新日志</template>
-        <ul>
-          <li>2021-08-28：发布全新现形器，支持批量现形，暂时移除制作坦克功能（新旧代码不兼容）
-          <li>2021-06-26：添加贴吧解码油猴脚本
-          <li>2021-06-25：添加制作坦克功能
-          <li>2021-06-23：首次发布，只实现了坦克现形
-        </ul>
-      </b-card>
-      <footer class="text-center">
-        <p>原版：<a href="https://newytk.github.io/">newytk.github.io</a></p>
-      </footer>
-    </soul-main>
-    <soul-footer></soul-footer>
+      <p>灵魂小站主站将进行升级改造，<br
+        >目前暂时关闭。<br
+        >由于<b>无影坦克 LNN 版</b>与灵魂小站主站使用同一个框架，目前一并关闭。<br
+        >给您带来的不便敬请谅解。</p>
+      <p><a href="tieba_tank_decoder.user.js">点此安装<b>贴吧无影解码油猴脚本</b></a></p>
+      <p>新作品：<a href="https://github.com/DGCK81LNN/lspmt">贴吧多功能图片解密工具</a><br
+        ><small class=text-muted style="font-size: 0.75em"
+          >打不开？试试<a class=text-danger title="用 GitHub 镜像站访问"
+            rel=nofollow href="https://hub.xn--p8jhe.tw/DGCK81LNN/lspmt"
+          >这个</a></small
+        ></p>
+    </main>
+    <footer>
+      <ul id=links class="list-unstyled mb-0">
+        <li><a href="https://github.com/DGCK81LNN">GitHub</a>
+        <li><a href="https://space.bilibili.com/328066747">Bilibili</a>
+        <li><a href="https://dgck81lnn.github.io/blog/">LNN 的博客!</a>
+      </ul>
+    </footer>
   </div>
-  <script src="index.js"></script>
 </body>
 </html>
