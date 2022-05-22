@@ -5,13 +5,13 @@
   <meta name=viewport content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name=format-detection content="telephone=no">
   <meta name=robots content=noindex>
-  <link rel=stylesheet href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css">
-  <link rel=stylesheet href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.css">
-  <link rel=stylesheet href="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.css">
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.12/vue.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue.min.js"></script>
-  <script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>
+  <link rel=stylesheet href="/bootstrap-lnn/dist/bootstrap-lnn.min.css">
+  <link rel=stylesheet href="/bootstrap-lnn/dist/bootstrap-vue-3-lnn.min.css">
+  <!--<link rel=stylesheet href="https://unpkg.zhimg.com/bootstrap-icons@1.8.2/font/bootstrap-icons.css">-->
+  <!--<script src="https://polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver"></script>-->
+  <script src="https://unpkg.com/vue@3.2.35/dist/vue.global.js"></script>
+  <script src="/bootstrap-lnn/dist/bootstrap-vue-3.min.js"></script>
+  <!--<script src="https://cdn.bootcdn.net/ajax/libs/bootstrap-vue/2.21.0/bootstrap-vue-icons.min.js"></script>-->
   <style>
     html {
       font-family: "Source Han CN", "思源黑体 CN", "PingFang SC", "苹方-简", "Microsoft YaHei", "微软雅黑", sans-serif;
@@ -58,13 +58,16 @@
 </div>
 <script>
 try {
-var vm = new Vue({
-  el: "#app",
-  data: {
-    msg: "Hello, world!"
+var vm = Vue.createApp({
+  data() {
+    return {
+      msg: "Hello, world!"
+    }
   }
-});
-vm.msg = document.body.firstElementChild.innerHTML;
+})
+.use(BootstrapVue3)
+.mount("#app")
+vm.msg = document.body.firstElementChild.innerHTML
 } catch(e) { alert(e); }
 </script>
 </body>
