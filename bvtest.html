@@ -23,6 +23,7 @@
 </head>
 <body>
 <div id="app">
+  <!--
   <b-navbar
   sticky
   toggleable=sm
@@ -55,19 +56,31 @@
   <p lang="cmn">你好，世界！</p>
   <p lang="jp">こんにちは、世界！</p>
   <pre style="white-space:pre-wrap">{{ msg }}</pre>
+  -->
+  <b-input-group>
+    <b-form-input v-model="text"></b-form-input>
+    <template #append>
+      <b-button @click="clearText" variant="outline-danger">x</b-button>
+    </template>
+  </b-input-group>
 </div>
 <script>
 try {
 var vm = Vue.createApp({
   data() {
     return {
-      msg: "Hello, world!"
+      text: "Hello, world!"
+    }
+  }
+  methods: {
+    clearText() {
+      this.text = ""
     }
   }
 })
 .use(BootstrapVue3)
 .mount("#app")
-vm.msg = document.body.firstElementChild.innerHTML
+//vm.msg = document.body.firstElementChild.innerHTML
 } catch(e) { alert(e); }
 </script>
 </body>
