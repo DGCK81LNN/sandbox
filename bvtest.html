@@ -20,6 +20,9 @@
       font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
     }
   </style>
+
+<script src="https://unpkg.com/vconsole@3"></script>
+
 </head>
 <body>
 <div id="app">
@@ -65,6 +68,9 @@
   </b-input-group>
 </div>
 <script>
+try {
+window.vConsole = new VConsole()
+} catch (_) { }
 try {
 var vm = Vue.createApp({
   data() {
