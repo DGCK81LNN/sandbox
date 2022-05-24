@@ -20,12 +20,9 @@
       font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
     }
   </style>
-
-<script src="https://unpkg.com/vconsole@3"></script>
-
 </head>
 <body>
-<div id="app">
+<div id="app" class="m-2">
   <!--
   <b-navbar
   sticky
@@ -61,7 +58,7 @@
   <pre style="white-space:pre-wrap">{{ msg }}</pre>
   -->
   <b-input-group>
-    <b-form-input v-model="text"></b-form-input>
+    <b-form-input v-model="text" ref="input"></b-form-input>
     <template #append>
       <b-button @click="clearText" variant="outline-danger">x</b-button>
     </template>
@@ -69,24 +66,22 @@
 </div>
 <script>
 try {
-window.vConsole = new VConsole()
-} catch (_) { }
-try {
 var vm = Vue.createApp({
   data() {
     return {
-      text: "Hello, world!"
+      text: "Hello, world!",
+      input: null,
     }
   },
   methods: {
     clearText() {
       this.text = ""
+      this.input.focus()
     }
   },
 })
 .use(BootstrapVue3)
 .mount("#app")
-//vm.msg = document.body.firstElementChild.innerHTML
 } catch(e) { alert(e); }
 </script>
 </body>
