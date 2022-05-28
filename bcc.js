@@ -334,7 +334,8 @@ scrollEl.addEventListener("change", () => {
     };
     let mouseMove = event => {
         if (!waveScrolling) return;
-        var time = waveScrollInitialValue + (waveScrollInitialPos - event.pageX) / WAVE_PIXELS_PER_SECOND;
+        var x = event instanceof TouchEvent ? event.touches[0].pageX : event.pageX;
+        var time = waveScrollInitialValue + (waveScrollInitialPos - x) / WAVE_PIXELS_PER_SECOND;
         if (time < 0) time = 0;
         if (time > videoEl.duration) time = videoEl.duration;
         videoEl.currentTime = time;
