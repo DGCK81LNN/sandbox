@@ -179,7 +179,7 @@
         function codePointToEscape(cp) {
           let hex = cp.toString(16)
           let len = hex.length
-          if (hex === 0) return "\\0"
+          if (cp === 0) return "\\0"
           if (len === 1) return `\\x0${hex}`
           if (len === 2) return `\\x${hex}`
           if (len === 3) return `\\u0${hex}`
@@ -195,16 +195,17 @@
 
         addAction("dump", () => {
           let restorer = "", data = ""
-          if (SoulLS.text) {
+          let text = SoulLS.text, code = SoulLS.code
+          if (text) {
             restorer += "SoulLS.text=SoulLS.code.match(/\\/\\*BEGIN TEXT\\/\\*\\n([^]*?)\\n\\/\\*END TEXT\\*\\//)[1].replace(/\\/[\\\\]+\\*|\\*[\\\\]+\\//g, s=>s[0]+s.slice(2));"
             data +=
               "/*BEGIN TEXT/*\n" +
-              SoulLS.text.replace(/\/[\\]*\*|\*[\\]*\//g, e => `${e[0]}\\${e.slice(1)}`) +
+              text.replace(/\/[\\]*\*|\*[\\]*\//g, e => `${e[0]}\\${e.slice(1)}`) +
               "\n/*END TEXT*/\n"
           }
-          if (SoulLS.code) {
+          if (code) {
             restorer += "SoulLS.code=SoulLS.code.match(/\\/\\*BEGIN CODE\\*\\/\\n([^]*)/)[1];"
-            data += "/*BEGIN CODE*/\n" + SoulLS.code
+            data += "/*BEGIN CODE*/\n" + code
           }
           SoulLS.out = "/*SoulLS dump*/" + restorer + 'throw"";\n' + data
         })
