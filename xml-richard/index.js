@@ -149,6 +149,7 @@ async function iterate(xel, el) {
         break;
       case "h":
         el.appendChild(importContent(childXel, "h2"));
+        break;
       case "i": {
         let childEl = el.appendChild(importContent(childXel, "p"));
         childEl.className = "voiceover"
