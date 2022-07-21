@@ -15,13 +15,18 @@
                   + data.epidemicRecord[1] * 4
                   + data.epidemicRecord[0] * 2
       console.log("loveBonus=" + loveBonus)
+      function fp(num, sign) {
+        let s = (num / 100).toFixed(2).replace(/\.?0+$/, "")
+        if (sign && num >= 0) s = "+" + s
+        return s
+      }
       $.dScore = function (delta, isRaw) {
         if (!isRaw) delta *= loveBonus
         delta |= 0
         score += delta
         let e = mainEl.appendChild(document.createElement("p"))
         e.className = "voiceover"
-        e.textContent = `好感度 ${delta < 0 ? delta : '+' + delta}！当前好感度 ${$.score}`
+        e.textContent = `好感度 ${fp(delta, true)}！当前好感度 ${fp($.score)}`
       }
       ]]>
     </js>
