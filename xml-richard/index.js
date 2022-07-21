@@ -149,10 +149,11 @@ async function iterate(xel, el) {
         break;
       case "h":
         el.appendChild(importContent(childXel, "h2"));
-      case "i":
-        el.appendChild(document.createElement("p"))
-          .appendChild(importContent(childXel, "i"));
+      case "i": {
+        let childEl = el.appendChild(importContent(childXel, "p"));
+        childEl.className = "voiceover"
         break;
+      }
       case "a":
         await execJs(childXel.getAttribute("js"));
         break;
@@ -199,8 +200,13 @@ async function iterate(xel, el) {
         // 没有找到匹配的<when>，抛出错误
         console.error("iterate(): <case>块中所有<when>都不匹配，<case>元素：\n", childXel);
         throw new Error("iterate(): <case>块中所有<when>都不匹配");
-      case "call":
-      // TODO: Implement expansive modules
+      case "call": {
+        let targetId = childXel.getAttribute("target");
+        let targetXel = xml.getElementById(targetId);
+        if (targetXel) await iterate(targetXel, el);
+        else console.log("iterate(): 已忽略不存在的子流程 " + targetId);
+        break;
+      }
     }
   }
 }
