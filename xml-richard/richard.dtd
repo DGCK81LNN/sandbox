@@ -1,19 +1,15 @@
-<!ELEMENT richard (volume*)>
-<!ATTLIST richard xmlns:html CDATA #FIXED "http://www.w3.org/1999/xhtml">
+<!ELEMENT richard (volume|expansion)*>
 
-<!ELEMENT volume (title, (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*)>
+<!ELEMENT volume (title, (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call|comment)*)>
 <!ATTLIST volume id ID #REQUIRED>
+
+<!ELEMENT expansion ((p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call|comment)*)>
+<!ATTLIST expansion id ID #REQUIRED>
 
 <!ELEMENT title (#PCDATA|s)*>
 <!ELEMENT p (#PCDATA|s)*>
 <!ELEMENT h (#PCDATA|s)*>
 <!ELEMENT i (#PCDATA|s)*>
-
-<!ELEMENT b (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
-<!ATTLIST b is (blockquote) #IMPLIED>
-<!ATTLIST b lang CDATA #IMPLIED>
-<!ATTLIST b class CDATA #IMPLIED>
-<!ATTLIST b style CDATA #IMPLIED>
 
 <!ELEMENT s (#PCDATA|s)*>
 <!ATTLIST s is (b|i|u|em|strong|cite|s) #IMPLIED>
@@ -22,23 +18,33 @@
 <!ATTLIST s style CDATA #IMPLIED>
 
 <!ELEMENT a EMPTY>
+<!ATTLIST a id CDATA #IMPLIED>
 <!ATTLIST a js CDATA #IMPLIED>
+
+<!ELEMENT b (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call|comment)*>
+<!ATTLIST b is (blockquote|section|article|header|footer) #IMPLIED>
+<!ATTLIST b lang CDATA #IMPLIED>
+<!ATTLIST b class CDATA #IMPLIED>
+<!ATTLIST b style CDATA #IMPLIED>
+
 <!ELEMENT js (#PCDATA)>
 
 <!ELEMENT separator EMPTY>
 <!ELEMENT pause EMPTY>
 <!ELEMENT choose (choice*)>
-<!ELEMENT choice (#PCDATA)>
+<!ELEMENT choice (#PCDATA|s)*>
 
-<!ELEMENT if (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ELEMENT if (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call|comment)*>
 <!ATTLIST if js CDATA #REQUIRED>
-<!ELEMENT elif (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ELEMENT elif (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call|comment)*>
 <!ATTLIST elif js CDATA #REQUIRED>
-<!ELEMENT else (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ELEMENT else (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call|comment)*>
 
 <!ELEMENT case (when+)>
-<!ELEMENT when (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call)*>
+<!ELEMENT when (p|h|i|a|b|js|separator|pause|choose|(if, elif*, else?)|case|call|comment)*>
 <!ATTLIST when js CDATA #REQUIRED>
 
 <!ELEMENT call EMPTY>
 <!ATTLIST call target NMTOKEN #REQUIRED>
+
+<!ELEMENT comment (#PCDATA)>
