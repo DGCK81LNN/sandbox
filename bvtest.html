@@ -15,6 +15,7 @@
     </b-input-group>
   </div>
   <script>
+window.addEventListener("DOMContentLoaded", function () {
 try {
     var vm = Vue.createApp({
       data() {
@@ -32,6 +33,7 @@ try {
     .use(BootstrapVue3)
     .mount("#app")
 } catch(e) { alert(e); }
+})
   </script>
 </body>
 </html>
