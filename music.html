@@ -28,8 +28,11 @@ var wav = auCtx.createPeriodicWave(new Float32Array([0, 1, 2, 3, 4]), new Float3
 function run(code) {
 let time = auCtx.currentTime + 1
 let beatLen = 0.5
-const song = []
+/** @type {OscillatorNode} */
+let osc = null
 new Function("note", "rest", "bpm", code)(note, rest, bpm)
+if (osc) osc._isLast = true
+btn.disabled = true
 
 function bpm(b) {
 beatLen = 60 / b
@@ -38,7 +41,7 @@ function rest(beats) {
 time += beatLen * beats
 }
 function note(n, beats) {
-var osc = auCtx.createOscillator()
+osc = auCtx.createOscillator()
 osc.setPeriodicWave(wav)
 osc.detune.value = n * 100
 osc.connect(auCtx.destination)
@@ -53,10 +56,12 @@ osc.stop(time)
 const onEnded = function () {
 this.disconnect()
 this.onended = null
+if (this._isLast) btn.disabled = false
 }
 
 btn.onclick = function () {
 try{
+if (auCtx.state === "suspended") auCtx.resume()
 run(codebox.value)
 history.replaceState(null, "", "##"+encodeURIComponent(codebox.value))
 }catch(e){alert(e)}
