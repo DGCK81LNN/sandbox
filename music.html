@@ -68,7 +68,7 @@ history.replaceState(null, "", "#?"+encodeURIComponent(codebox.value))
 }
 
 (window.onhashchange = function () {
-if(location.hash[1]==="?")try{
+if(location.hash)try{
 codebox.value=decodeURIComponent(location.hash.slice(2))
 }catch(_){}
 })()
