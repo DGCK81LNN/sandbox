@@ -63,13 +63,15 @@ btn.onclick = function () {
 try{
 if (auCtx.state === "suspended") auCtx.resume()
 run(codebox.value)
-history.replaceState(null, "", "##"+encodeURIComponent(codebox.value))
+history.replaceState(null, "", "#?"+encodeURIComponent(codebox.value))
 }catch(e){alert(e)}
 }
 
-if(location.hash)try{
+(window.onhashchange = function () {
+if(location.hash[1]==="?")try{
 codebox.value=decodeURIComponent(location.hash.slice(2))
 }catch(_){}
+})()
 document.write("ok")
 </script>
 </body>
