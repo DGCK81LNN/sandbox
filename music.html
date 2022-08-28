@@ -28,11 +28,12 @@ var wav = auCtx.createPeriodicWave(new Float32Array([0, 1, 2, 3, 4]), new Float3
 function run(code) {
 let time = auCtx.currentTime + 1
 let beatLen = 0.5
-/** @type {OscillatorNode} */
-let osc = null
-new Function("note", "rest", "bpm", code)(note, rest, bpm)
-if (osc) osc._isLast = true
+var osc = null
+new Function("note", "rest", "bpm", "getTime", "setTime", code)(note, rest, bpm, ()=>time, v=>{time=v})
+if (osc) {
+osc._isLast = true
 btn.disabled = true
+} else alert("no notes")
 
 function bpm(b) {
 beatLen = 60 / b
@@ -42,21 +43,22 @@ time += beatLen * beats
 }
 function note(n, beats) {
 osc = auCtx.createOscillator()
+let gain = auCtx.createGain()
 osc.setPeriodicWave(wav)
 osc.detune.value = n * 100
-osc.connect(auCtx.destination)
-osc.onended = onEnded
+osc.connect(gain)
+gain.connect(auCtx.destination)
+osc.onended = () => {
+osc.disconnect()
+osc.onended = null
+if (this._isLast) btn.disabled = false
+}
 osc.start(time)
+gain.gain.setValueAtTime(0.5, time)
 time += beatLen * beats
 osc.stop(time)
+gain.gain.linearRampToValueAtTime(0, time)
 }
-}
-
-/** @this {OscillatorNode} */
-const onEnded = function () {
-this.disconnect()
-this.onended = null
-if (this._isLast) btn.disabled = false
 }
 
 btn.onclick = function () {
