@@ -51,7 +51,7 @@ gain.connect(auCtx.destination)
 osc.onended = () => {
 osc.disconnect()
 osc.onended = null
-if (this._isLast) btn.disabled = false
+if (osc._isLast) btn.disabled = false
 }
 osc.start(time)
 gain.gain.setValueAtTime(0.5, time)
