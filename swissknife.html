@@ -60,7 +60,7 @@
       </div>
       <div>
         out &larr; html
-        <button id=btn-htmlenteg>escape &amp;&lt;&gt;</button>
+        <button id=btn-htmlentec>escape &amp;&lt;&gt;</button>
         <button id=btn-htmlented>escape &amp;"</button>
         <button id=btn-htmlentes>escape &amp;'</button>
         <button id=btn-htmlentd>unescape</button>
@@ -68,7 +68,7 @@
       </div>
       <div>
         out &larr; read
-        <button id=btn-flie>#file</button>
+        <button id=btn-file>#file</button>
         as
         <button id=btn-filet>text</button>
         <button id=btn-filed>data url</button>
@@ -118,14 +118,14 @@
             return codeCm.getValue()
           },
           set code(val) {
-            codeCm.setValue(val)
+            codeCm.setValue(String(val))
           },
           $text: $text,
           get text() {
             return $text.value
           },
           set text(val) {
-            $text.value = val
+            $text.value = String(val)
           },
           $out: $out,
           get out() {
@@ -133,7 +133,9 @@
           },
           set out(val) {
             showEvalOut = false
-            $out.value = val
+            let out = String(val)
+            if (val instanceof Error) out += "\n\n" + val.stack
+            $out.value = out
           },
           $file: $file,
           get file() {
@@ -165,14 +167,40 @@
         })
 
         var showEvalOut = true
+        const evalFunc = new Function("__code", "return eval(__code)")
+        const AsyncFunction = (async function () {}).constructor
+        let evalNonce = 0
         addAction("eval", () => {
           SoulLS.out = ""
+          const code = SoulLS.code
+
+          let useEval = true
+          try {
+            evalFunc('throw Symbol.for("@@__SOULLS_EVAL_OK__@@");' + code)
+          } catch (err) {
+            if (err !== Symbol.for("@@__SOULLS_EVAL_OK__@@")) useEval = false
+          }
+
           showEvalOut = true
           try {
-            let __result = String(eval(codebox.value))
-            if (showEvalOut) SoulLS.out = __result
+            if (useEval) {
+              let result = evalFunc(code)
+              if (showEvalOut) SoulLS.out = result
+            } else {
+              const nonce = ++evalNonce
+              const promise = new AsyncFunction(code)()
+              promise.then((result) => {
+                if (showEvalOut && evalNonce === nonce) SoulLS.out = result
+              }, (err) => {
+                SoulLS.out = err
+              })
+              if (showEvalOut) {
+                SoulLS.out = String(promise)
+                showEvalOut = true
+              }
+            }
           } catch (err) {
-            SoulLS.out = String(err)
+            SoulLS.out = err
           }
         })
 
@@ -192,8 +220,8 @@
             s += codePointToEscape(chara.codePointAt(0))
           SoulLS.out = `"${s}"`
         })
-
-        addAction("dump", () => {
+        
+        function dump() {
           let restorer = "", data = ""
           let text = SoulLS.text, code = SoulLS.code
           if (text) {
@@ -207,7 +235,10 @@
             restorer += "SoulLS.code=SoulLS.code.match(/\\/\\*BEGIN CODE\\*\\/\\n([^]*)/)[1];"
             data += "/*BEGIN CODE*/\n" + code
           }
-          SoulLS.out = "/*SoulLS dump*/" + restorer + 'throw"";\n' + data
+          return "/*SoulLS dump*/" + restorer + 'throw"";\n' + data
+        }
+
+        addAction("dump", () => {          SoulLS.out = dump()
         })
 
         addAction("b64e", () => {
@@ -224,7 +255,7 @@
           SoulLS.out = decodeURIComponent(SoulLS.text)
         })
 
-        addAction("htmlenteg", () => {
+        addAction("htmlentec", () => {
           SoulLS.out = SoulLS.text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
         })
         addAction("htmlented", () => {
@@ -241,7 +272,7 @@
           })
         })
 
-        addAction("flie", () => {
+        addAction("file", () => {
           file.click()
         })
         addAction("filet", () => {
