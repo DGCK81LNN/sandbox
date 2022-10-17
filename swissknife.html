@@ -25,7 +25,7 @@
     <link rel=stylesheet href="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/codemirror.css">
     <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/codemirror.min.js"></script>
     <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/mode/javascript/javascript.min.js"></script>
-    <script src="/js/utils.js"></script>
+    <script src="https://dgck81lnn.github.io/js/utils.js"></script>
   </head>
   <body>
     <h1>
@@ -197,10 +197,10 @@
           let restorer = "", data = ""
           let text = SoulLS.text, code = SoulLS.code
           if (text) {
-            restorer += "SoulLS.text=SoulLS.code.match(/\\/\\*BEGIN TEXT\\/\\*\\n([^]*?)\\n\\/\\*END TEXT\\*\\//)[1].replace(/\\/[\\\\]+\\*|\\*[\\\\]+\\//g, s=>s[0]+s.slice(2));"
+            restorer += "SoulLS.text=SoulLS.code.match(/\\/\\*BEGIN TEXT\\/\\*\\n([^]*?)\\n\\/\\*END TEXT\\*\\//)[1].replace(/\\/[\\\\]+(?=\\*)|\\*[\\\\]+(?=\\/)/g, s=>s[0]+s.slice(2));"
             data +=
               "/*BEGIN TEXT/*\n" +
-              text.replace(/\/[\\]*\*|\*[\\]*\//g, e => `${e[0]}\\${e.slice(1)}`) +
+              text.replace(/\/[\\]*(?=\*)|\*[\\]*(?=\/)/g, e => `${e[0]}\\${e.slice(1)}`) +
               "\n/*END TEXT*/\n"
           }
           if (code) {
