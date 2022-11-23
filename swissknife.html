@@ -7,10 +7,22 @@
     <title>
       LNN's swiss-knife util
     </title>
-    <style>
-      button{
-        padding:4px 8px;
+    <style id=style>
+      * {
+        font-family: inherit;
+        -webkit-overflow-scrolling: touch;
       }
+      :root { font-family: -apple-system,Segoe UI,Roboto,system-ui,Helvetica Neue,Arial,Noto Sans,Liberation Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji }
+      pre, code, kbd, samp, tt, textarea,
+      .cm-scroller.cm-scroller,
+      .cm-tooltip.cm-tooltip.cm-tooltip-autocomplete > ul {
+        font-size: 0.875em;
+        font-family: Sarasa Mono SC,Iosevka,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace
+      }
+      input, button { font-size: 0.875em }
+      button { padding: 3px 6px }
+      #codeToolbarDiv > div { display: inline-block }
+      #codeDiv .cm-editor { height: 20rem }
       #textAndOut {
         display: flex;
         flex-wrap: wrap;
@@ -22,9 +34,7 @@
         resize: none;
       }
     </style>
-    <link rel=stylesheet href="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/codemirror.css">
-    <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/codemirror.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/codemirror/5.58.3/mode/javascript/javascript.min.js"></script>
+    <script src="https://dgck81lnn.github.io/codemirror-lnn/dist/codemirror-lnn.min.js"></script>
     <script src="https://dgck81lnn.github.io/js/utils.js"></script>
   </head>
   <body>
@@ -33,10 +43,20 @@
     </h1>
     <div id=codeDiv>
       <div id=codeToolbarDiv>
-        <button id=btn-cm-selectall>select all</button>
-        <button id=btn-cm-undo>undo</button>
-        <button id=btn-cm-redo>redo</button>
-        <button id=btn-cm-tab>tab</button>
+        <div>
+          <button id=btn-cm-selectall>select all</button>
+          <button id=btn-cm-undo>undo</button>
+          <button id=btn-cm-redo>redo</button>
+        </div>
+        <div>
+          <button id=btn-cm-shiftright>shift right</button>
+          <button id=btn-cm-shiftleft>shift left</button>
+        </div>
+        <div>
+          <button id=btn-cm-find>find</button>
+          <button id=btn-cm-autoindent>autoindent</button>
+          <button id=btn-cm-completion>completion</button>
+        </div>
       </div>
     </div>
     <div style="margin:8px 0">
@@ -83,43 +103,60 @@
       </div>
     </div>
     <div id=textAndOut>
-      <textarea id=text placeholder="#text"></textarea>
-      <textarea id=out placeholder="#out" readonly></textarea>
+      <textarea id=text placeholder="$text"
+        autocapitalize=off autocomplete=off spellcheck=false
+      ></textarea>
+      <textarea id=out placeholder="$out" readonly></textarea>
     </div>
-    <fieldset id=myDivWrapper><legend>#myDiv</legend>
+    <fieldset id=myDivWrapper><legend>$myDiv</legend>
       <div id=myDiv></div>
     </fieldset>
     <input type=file id=file style="display:none">
     <script>
       function $$$(id) { return document.getElementById(id) }
       ;(function (){
-        const codeCm = new CodeMirror($$$("codeDiv"), {
-          lineNumbers: true,
-          lineWrapping: true,
-          indentUnit: 2
-        })
+        /** @type {typeof import("@dgck81lnn/codemirror-lnn")} */
+        const CodeMirror = window.CodeMirror
         const $code = window.codebox = {
           get value() {
-            return codeCm.getValue()
+            return codeView.state.doc.toString()
           },
           set value(v) {
-            codeCm.setValue(v)
+            codeView.setState(CodeMirror.state.EditorState.create({
+              doc: String(v),
+              extensions: this.extensions
+            }))
           },
-          CodeMirror: codeCm
+          extensions: [
+            CodeMirror.basicSetup,
+            CodeMirror.langJavascript.javascript(),
+            CodeMirror.langJavascript.javascriptLanguage.data.of({
+              autocomplete: CodeMirror.langJavascript.scopeCompletionSource(window)
+            }),
+            CodeMirror.view.placeholder("$code"),
+          ],
+          EditorView: null
         }
+        const codeView = $code.EditorView = new CodeMirror.view.EditorView({
+          extensions: $code.extensions,
+          parent: document.getElementById("codeDiv")
+        })
 
+        /** @type {HTMLTextAreaElement} */
         const $text = window.text = $$$("text")
+        /** @type {HTMLTextAreaElement} */
         const $out = window.out = $$$("out")
         const $myDiv = window.myDiv = $$$("myDiv")
+        /** @type {HTMLInputElement} */
         const $file = window.file = $$$("file")
 
         const SoulLS = window.SoulLS = {
           $code: $code,
           get code() {
-            return codeCm.getValue()
+            return $code.value
           },
           set code(val) {
-            codeCm.setValue(String(val))
+            $code.value = val
           },
           $text: $text,
           get text() {
@@ -134,9 +171,7 @@
           },
           set out(val) {
             showEvalOut = false
-            let out = String(val)
-            if (val instanceof Error) out += "\n\n" + val.stack
-            $out.value = out
+            $out.value = inspect(val)
           },
           $file: $file,
           get file() {
@@ -144,7 +179,19 @@
           },
           $myDiv: $myDiv,
           myDiv: $myDiv,
-          dump: dump
+          dump: dump,
+          inspect: inspect
+        }
+
+        function inspect(val) {
+          if (Object.is(val, -0)) return "-0"
+          if (val instanceof Error) return String(val) + "\n\n" + val.stack
+          return String(val)
+        }
+        function appendOutput(val) {
+          if (!showEvalOut && val === undefined) return
+          if (SoulLS.out === "") SoulLS.out = inspect(val)
+          else SoulLS.out += "\n\n" + inspect(val)
         }
 
         function addAction(id, handler) {
@@ -152,24 +199,42 @@
         }
 
         addAction("cm-selectall", () => {
-          codeCm.focus()
-          codeCm.execCommand('selectAll')
+          codeView.focus()
+          CodeMirror.commands.selectAll(codeView)
         })
         addAction("cm-undo", () => {
-          codeCm.focus()
-          codeCm.execCommand('undo')
+          codeView.focus()
+          CodeMirror.commands.undo(codeView)
         })
         addAction("cm-redo", () => {
-          codeCm.focus()
-          codeCm.execCommand('redo')
+          codeView.focus()
+          CodeMirror.commands.redo(codeView)
         })
-        addAction("cm-tab", () => {
-          codeCm.focus()
-          codeCm.execCommand('defaultTab')
+        addAction("cm-shiftright", () => {
+          codeView.focus()
+          CodeMirror.commands.indentMore(codeView)
+        })
+        addAction("cm-shiftleft", () => {
+          codeView.focus()
+          CodeMirror.commands.indentLess(codeView)
+        })
+        addAction("cm-find", () => {
+          CodeMirror.search.searchPanelOpen(codeView.state) ?
+            CodeMirror.search.closeSearchPanel(codeView) :
+            CodeMirror.search.openSearchPanel(codeView)
+        })
+        addAction("cm-autoindent", () => {
+          codeView.focus()
+          CodeMirror.commands.indentSelection(codeView)
+        })
+        addAction("cm-completion", () => {
+          codeView.focus()
+          CodeMirror.autocomplete.startCompletion(codeView)
         })
 
         var showEvalOut = true
-        const evalFunc = new Function("__code", "return eval(__code)")
+        const evalFunc = eval
+        /** @type {new (...args: string[]) => (...args) => Promise<unknown>} */
         const AsyncFunction = (async function () {}).constructor
         let evalNonce = 0
         addAction("eval", () => {
@@ -186,20 +251,13 @@
           showEvalOut = true
           try {
             if (useEval) {
-              let result = evalFunc(code)
-              if (showEvalOut) SoulLS.out = result
+              appendOutput(evalFunc(code))
             } else {
               const nonce = ++evalNonce
-              const promise = new AsyncFunction(code)()
-              promise.then((result) => {
-                if (showEvalOut && evalNonce === nonce) SoulLS.out = result
-              }, (err) => {
-                SoulLS.out = err
-              })
-              if (showEvalOut) {
-                SoulLS.out = String(promise)
-                showEvalOut = true
-              }
+              new AsyncFunction(code)().then(
+                result => { if (evalNonce === nonce) appendOutput(result) },
+                err => { if (evalNonce === nonce) appendOutput(err) }
+              )
             }
           } catch (err) {
             SoulLS.out = err
