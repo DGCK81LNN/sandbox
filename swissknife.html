@@ -104,7 +104,8 @@
           },
           set value(v) {
             codeCm.setValue(v)
-          }
+          },
+          CodeMirror: codeCm
         }
 
         const $text = window.text = $$$("text")
@@ -142,7 +143,8 @@
             return $file.files[0]
           },
           $myDiv: $myDiv,
-          myDiv: $myDiv
+          myDiv: $myDiv,
+          dump: dump
         }
 
         function addAction(id, handler) {
@@ -238,7 +240,8 @@
           return "/*SoulLS dump*/" + restorer + 'throw"";\n' + data
         }
 
-        addAction("dump", () => {          SoulLS.out = dump()
+        addAction("dump", () => {
+          SoulLS.out = dump()
         })
 
         addAction("b64e", () => {
@@ -279,6 +282,7 @@
           var r = new FileReader()
           r.onload = () => {
             SoulLS.out = r.result
+            r.onload = null
           }
           r.readAsText(file.files[0])
         })
@@ -286,6 +290,7 @@
           var r = new FileReader()
           r.onload = () => {
             SoulLS.out = r.result
+            r.onload = null
           }
           r.readAsDataURL(file.files[0])
         })
