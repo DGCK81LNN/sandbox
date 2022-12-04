@@ -197,10 +197,11 @@
           if (val instanceof Error) return String(val) + "\n\n" + val.stack
           return String(val)
         }
-        function appendOutput(val) {
+        function appendOutput(val, type) {
           if (!showEvalOut && val === undefined) return
           if (SoulLS.out === "") SoulLS.out = inspect(val)
           else SoulLS.out += "\n\n" + inspect(val)
+          if (val !== undefined || type) console[type || "dir"](val)
         }
 
         function addAction(id, handler) {
@@ -265,11 +266,11 @@
               const nonce = ++evalNonce
               new AsyncFunction(code)().then(
                 result => { if (evalNonce === nonce) appendOutput(result) },
-                err => { if (evalNonce === nonce) appendOutput(err) }
+                err => { if (evalNonce === nonce) appendOutput(err, "error") }
               )
             }
           } catch (err) {
-            SoulLS.out = err
+            appendOutput(err, "error")
           }
         })
 
