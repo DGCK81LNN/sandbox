@@ -204,43 +204,39 @@
           if (val !== undefined || type) console[type || "dir"](val)
         }
 
-        function addAction(id, handler) {
-          $$$("btn-" + id).addEventListener("click", () => { handler() })
+        function addAction(id, handler, isEditorCommand) {
+          const $btn = $$$("btn-" + id)
+          $btn.addEventListener("click", handler)
+          if (isEditorCommand)
+            $btn.addEventListener("mousedown", ev => { ev.preventDefault() })
         }
 
         addAction("cm-selectall", () => {
-          codeView.focus()
           CodeMirror.commands.selectAll($code.view)
-        })
+        }, true)
         addAction("cm-undo", () => {
-          codeView.focus()
           CodeMirror.commands.undo($code.view)
-        })
+        }, true)
         addAction("cm-redo", () => {
-          codeView.focus()
           CodeMirror.commands.redo($code.view)
-        })
+        }, true)
         addAction("cm-shiftright", () => {
-          codeView.focus()
           CodeMirror.commands.indentMore($code.view)
-        })
+        }, true)
         addAction("cm-shiftleft", () => {
-          codeView.focus()
           CodeMirror.commands.indentLess($code.view)
-        })
+        }, true)
         addAction("cm-find", () => {
           CodeMirror.search.searchPanelOpen($code.view.state) ?
             CodeMirror.search.closeSearchPanel($code.view) :
             CodeMirror.search.openSearchPanel($code.view)
-        })
+        }, true)
         addAction("cm-autoindent", () => {
-          codeView.focus()
           CodeMirror.commands.indentSelection($code.view)
-        })
+        }, true)
         addAction("cm-completion", () => {
-          codeView.focus()
           CodeMirror.autocomplete.startCompletion($code.view)
-        })
+        }, true)
 
         var showEvalOut = true
         const evalFunc = eval
