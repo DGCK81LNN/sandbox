@@ -117,17 +117,29 @@
       ;(function (){
         /** @type {typeof import("@dgck81lnn/codemirror-lnn")} */
         const CodeMirror = window.CodeMirror
-        const $code = window.codebox = {
+
+        class CodeArea {
+          constructor(parent, extensions) {
+            this.extensions = extensions
+            this.view = new CodeMirror.view.EditorView({
+              extensions: extensions,
+              parent: parent
+            })
+          }
           get value() {
-            return codeView.state.doc.toString()
-          },
+            return this.view.state.doc.toString()
+          }
           set value(v) {
-            codeView.setState(CodeMirror.state.EditorState.create({
+            this.view.setState(CodeMirror.state.EditorState.create({
               doc: String(v),
               extensions: this.extensions
             }))
-          },
-          extensions: [
+          }
+        }
+
+        const $code = window.codebox = new CodeArea(
+          $$$("codeDiv"),
+          [
             CodeMirror.basicSetup,
             CodeMirror.langJavascript.javascript(),
             CodeMirror.langJavascript.javascriptLanguage.data.of({
@@ -135,13 +147,8 @@
             }),
             CodeMirror.view.placeholder("$code"),
             CodeMirror.view.EditorView.lineWrapping,
-          ],
-          EditorView: null
-        }
-        const codeView = $code.EditorView = new CodeMirror.view.EditorView({
-          extensions: $code.extensions,
-          parent: document.getElementById("codeDiv")
-        })
+          ]
+        )
 
         /** @type {HTMLTextAreaElement} */
         const $text = window.text = $$$("text")
@@ -181,7 +188,8 @@
           $myDiv: $myDiv,
           myDiv: $myDiv,
           dump: dump,
-          inspect: inspect
+          inspect: inspect,
+          CodeArea: CodeArea
         }
 
         function inspect(val) {
@@ -201,36 +209,36 @@
 
         addAction("cm-selectall", () => {
           codeView.focus()
-          CodeMirror.commands.selectAll(codeView)
+          CodeMirror.commands.selectAll($code.view)
         })
         addAction("cm-undo", () => {
           codeView.focus()
-          CodeMirror.commands.undo(codeView)
+          CodeMirror.commands.undo($code.view)
         })
         addAction("cm-redo", () => {
           codeView.focus()
-          CodeMirror.commands.redo(codeView)
+          CodeMirror.commands.redo($code.view)
         })
         addAction("cm-shiftright", () => {
           codeView.focus()
-          CodeMirror.commands.indentMore(codeView)
+          CodeMirror.commands.indentMore($code.view)
         })
         addAction("cm-shiftleft", () => {
           codeView.focus()
-          CodeMirror.commands.indentLess(codeView)
+          CodeMirror.commands.indentLess($code.view)
         })
         addAction("cm-find", () => {
-          CodeMirror.search.searchPanelOpen(codeView.state) ?
-            CodeMirror.search.closeSearchPanel(codeView) :
-            CodeMirror.search.openSearchPanel(codeView)
+          CodeMirror.search.searchPanelOpen($code.view.state) ?
+            CodeMirror.search.closeSearchPanel($code.view) :
+            CodeMirror.search.openSearchPanel($code.view)
         })
         addAction("cm-autoindent", () => {
           codeView.focus()
-          CodeMirror.commands.indentSelection(codeView)
+          CodeMirror.commands.indentSelection($code.view)
         })
         addAction("cm-completion", () => {
           codeView.focus()
-          CodeMirror.autocomplete.startCompletion(codeView)
+          CodeMirror.autocomplete.startCompletion($code.view)
         })
 
         var showEvalOut = true
