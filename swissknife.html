@@ -94,6 +94,8 @@
         <button id=btn-filed>data url</button>
         |
         <button id=btn-fileb>to object url</button>
+        |
+        <button id=btn-savtxt>save text</button>
       </div>
       <div>
         swap
@@ -161,32 +163,35 @@
         const SoulLS = window.SoulLS = {
           $code: $code,
           get code() {
-            return $code.value
+            return this.$code.value
           },
           set code(val) {
-            $code.value = val
+            this.$code.value = val
           },
           $text: $text,
           get text() {
-            return $text.value
+            return this.$text.value
           },
           set text(val) {
-            $text.value = String(val)
+            this.$text.value = String(val)
           },
           $out: $out,
           get out() {
-            return $out.value
+            return this.$out.value
           },
           set out(val) {
             showEvalOut = false
-            $out.value = inspect(val)
+            this.$out.value = inspect(val)
           },
           $file: $file,
           get file() {
-            return $file.files[0]
+            return this.$file.files[0]
           },
           $myDiv: $myDiv,
-          myDiv: $myDiv,
+          /** @deprecated */
+          get myDiv() {
+            return this.$myDiv
+          },
           dump: dump,
           inspect: inspect,
           CodeArea: CodeArea
@@ -212,30 +217,30 @@
         }
 
         addAction("cm-selectall", () => {
-          CodeMirror.commands.selectAll($code.view)
+          CodeMirror.commands.selectAll(SoulLS.$code.view)
         }, true)
         addAction("cm-undo", () => {
-          CodeMirror.commands.undo($code.view)
+          CodeMirror.commands.undo(SoulLS.$code.view)
         }, true)
         addAction("cm-redo", () => {
-          CodeMirror.commands.redo($code.view)
+          CodeMirror.commands.redo(SoulLS.$code.view)
         }, true)
         addAction("cm-shiftright", () => {
-          CodeMirror.commands.indentMore($code.view)
+          CodeMirror.commands.indentMore(SoulLS.$code.view)
         }, true)
         addAction("cm-shiftleft", () => {
-          CodeMirror.commands.indentLess($code.view)
+          CodeMirror.commands.indentLess(SoulLS.$code.view)
         }, true)
         addAction("cm-find", () => {
-          CodeMirror.search.searchPanelOpen($code.view.state) ?
-            CodeMirror.search.closeSearchPanel($code.view) :
-            CodeMirror.search.openSearchPanel($code.view)
+          CodeMirror.search.searchPanelOpen(SoulLS.$code.view.state) ?
+            CodeMirror.search.closeSearchPanel(SoulLS.$code.view) :
+            CodeMirror.search.openSearchPanel(SoulLS.$code.view)
         }, true)
         addAction("cm-autoindent", () => {
-          CodeMirror.commands.indentSelection($code.view)
+          CodeMirror.commands.indentSelection(SoulLS.$code.view)
         }, true)
         addAction("cm-completion", () => {
-          CodeMirror.autocomplete.startCompletion($code.view)
+          CodeMirror.autocomplete.startCompletion(SoulLS.$code.view)
         }, true)
 
         var showEvalOut = true
@@ -360,6 +365,20 @@
         })
         addAction("fileb", () => {
           SoulLS.out = window.URL.createObjectURL(SoulLS.file)
+        })
+        let saveName = "text.txt"
+        addAction("savtxt", () => {
+          const name = prompt("filename", saveName)
+          if (!name) return
+          const url = URL.createObjectURL(new File([SoulLS.text], name))
+          const $a = document.createElement("a")
+          $a.download = name
+          $a.href = url
+          $a.click()
+          setTimeout(() => {
+            URL.revokeObjectURL(url)
+          }, 60000)
+          saveName = name
         })
 
         addAction("swapco", () => {
