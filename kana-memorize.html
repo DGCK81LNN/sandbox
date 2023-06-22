@@ -1,0 +1,274 @@
+<!DOCTYPE HTML>
+<html lang="zh-cmn-Hans">
+  <head>
+    <meta charset="UTF-8">
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <title>五十音图记忆</title>
+    <link rel=stylesheet href="https://dgck81lnn.github.io/bootstrap-lnn/dist/bootstrap-lnn.min.css">
+    <style>
+      #question {
+        font-size: 5rem;
+      }
+      .choice {
+        font-size: 3rem;
+      }
+      .choice,
+      #next {
+        height: 6rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id=app class="m-2">
+      <div id=question lang=ja class="my-5 text-center">
+        {{ question }}
+      </div>
+      <div id=choices class="mb-2 row row-cols-2 g-1">
+        <div v-for="choice in choices" class="col d-flex">
+          <button
+            lang=ja :class="['choice', 'btn', getChoiceColorClass(choice), 'flex-fill']"
+            :disabled="chosen !== null"
+            @click="choose(choice)"
+          >
+            <span v-if="chosen === null">{{ choice }}</span>
+            <ruby v-else><rb>{{ getTableEntry(choice)[kanaType] }}</rb><rt>{{ getTableEntry(choice).romaji }}</rt></ruby>
+          </button>
+        </div>
+      </div>
+      <div class="d-flex">
+        <button id=next
+          :class="['btn', getNextColorClass(), 'flex-fill']"
+          @click="next()"
+        >继续</button>
+      </div>
+      <!--<pre style="white-space:pre-wrap;overflow-wrap:break-word">{{ JSON.stringify(romajiWeights, null, 2) }}</pre>-->
+      <div v-for="(v, r) in romajiWeights" :style="{ fontSize: v * 2 + 'px' }" class="d-inline-block me-1">{{ r }}</div>
+    </div>
+    <script>
+  window.onerror=(...{ [4]: e }) => alert(`${e}\n\n${e.stack}`)
+  var _adl = function fun(r) {
+    const s = new Error().stack
+    const t = performance.now()
+    if (!r && fun.s && s === fun.s && t - fun.n < 100) {
+      if (t - fun.t > 2000) throw new Error("loop has been running for more than 2 secs")
+    } else {
+      fun.s = s
+      fun.t = t
+    }
+    fun.n = t
+  }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4"></script>
+    <script>
+      document.write('and..')
+
+      const table =
+[
+  [
+    { hiragana: "あ", romaji: "a" },
+    { hiragana: "い", romaji: "i" },
+    { hiragana: "う", romaji: "u" },
+    { hiragana: "え", romaji: "e" },
+    { hiragana: "お", romaji: "o" },
+  ],
+  [
+    { hiragana: "か", romaji: "ka" },
+    { hiragana: "き", romaji: "ki" },
+    { hiragana: "く", romaji: "ku" },
+    { hiragana: "け", romaji: "ke" },
+    { hiragana: "こ", romaji: "ko" },
+  ],
+  [
+    { hiragana: "さ", romaji: "sa" },
+    { hiragana: "し", romaji: "shi" },
+    { hiragana: "す", romaji: "su" },
+    { hiragana: "せ", romaji: "se" },
+    { hiragana: "そ", romaji: "so" },
+  ],
+  [
+    { hiragana: "た", romaji: "ta" },
+    { hiragana: "ち", romaji: "chi" },
+    { hiragana: "つ", romaji: "tsu" },
+    { hiragana: "て", romaji: "te" },
+    { hiragana: "と", romaji: "to" },
+  ],
+  [
+    { hiragana: "な", romaji: "na" },
+    { hiragana: "に", romaji: "ni" },
+    { hiragana: "ぬ", romaji: "nu" },
+    { hiragana: "ね", romaji: "ne" },
+    { hiragana: "の", romaji: "no" },
+  ],
+  [
+    { hiragana: "は", romaji: "ha" },
+    { hiragana: "ひ", romaji: "hi" },
+    { hiragana: "ふ", romaji: "fu" },
+    { hiragana: "へ", romaji: "he" },
+    { hiragana: "ほ", romaji: "ho" },
+  ],
+  [
+    { hiragana: "ま", romaji: "ma" },
+    { hiragana: "み", romaji: "mi" },
+    { hiragana: "む", romaji: "mu" },
+    { hiragana: "め", romaji: "me" },
+    { hiragana: "も", romaji: "mo" },
+  ],
+  [
+    { hiragana: "や", romaji: "ya" },
+    ,
+    { hiragana: "ゆ", romaji: "yu" },
+    ,
+    { hiragana: "よ", romaji: "yo" },
+  ],
+  [
+    { hiragana: "ら", romaji: "ra" },
+    { hiragana: "り", romaji: "ri" },
+    { hiragana: "る", romaji: "ru" },
+    { hiragana: "れ", romaji: "re" },
+    { hiragana: "ろ", romaji: "ro" },
+  ],
+  [{ hiragana: "わ", romaji: "wa" }, , , , { hiragana: "を", romaji: "wo" }],
+  [, , , , , { hiragana: "ん", romaji: "n" }]
+]
+      const xyTable = Object.create(null)
+      const romajiWeights = Object.create(null)
+      const xys = table.flatMap((row, x) => {
+        return row.map((cell, y) => {
+          const xy = [x, y]
+          xyTable[cell.hiragana] = xy
+          xyTable[cell.katakana] = xy
+          xyTable[cell.romaji] = xy
+          romajiWeights[cell.romaji] = 5
+          return xy
+        })
+      })
+
+      const confusingGroups = [
+        [..."あめ"],
+        [..."ぬめ"],
+        [..."きまも"],
+        [..."いり"],
+        [..."こにた"],
+        [..."ほま"],
+        [..."きさ"],
+        [..."ちら"],
+        [..."さち"],
+        [..."たな"],
+        [..."ねれわ"],
+        [..."けは"],
+        [..."はほ"],
+        [..."るろ"],
+      ]
+
+      function sample(array) {
+        return array[0 | (Math.random() * array.length)]
+      }
+      function dig(object, path) {
+        for (const prop of path) object = object[prop]
+        return object
+      }
+      function getTableEntry(string) {
+        const [x, y] = xyTable[string]
+        return table[x][y]
+      }
+      function shuffle(array) {
+        for (let i = array.length - 1; i; --i) {
+            let j = 0 | (Math.random() * (i + 1))
+            if (i !== j) [array[i], array[j]] = [array[j], array[i]]
+        }
+        return array
+      }
+      function wsamples(entries, m) {
+        const results = entries.map(([v, w]) => [v, (1 - Math.random()) ** (1 / w)])
+        results.sort(([, k1], [, k2]) => k2 - k1)
+        return results.slice(0, m).map(([v, k]) => v)
+      }
+      const { ref } = Vue
+
+      vue = Vue.createApp({
+        setup: () => ({
+            question: ref(""),
+            answer: ref(""),
+            choices: ref([]),
+            chosen: ref(null),
+            kanaType: ref("hiragana"),
+            romajiWeights: Vue.computed(() => romajiWeights),
+            newQuestion() {
+              const questionType = Math.random() < 0.5 ? "romaji" : this.kanaType
+              const answerType = questionType === "romaji" ? this.kanaType : "romaji"
+              const [x, y] = xyTable[wsamples(Object.entries(romajiWeights), 1)[0]]
+              const cell = table[x][y]
+              const kana = cell[this.kanaType]
+              const question = cell[questionType]
+              const answer = cell[answerType]
+              const choices = [answer]
+
+              const weights = Object.create(null)
+              for (const group of confusingGroups) {
+                if (!group.includes(kana)) continue
+                for (const cKana of group) {
+                  if (cKana === kana) continue
+                  const cAnswer = getTableEntry(cKana)[answerType]
+                  weights[cAnswer] = 100
+                }
+              }
+              for (const [cx, cy] of xys) {
+                if (cx === x && cy === y) continue
+                const cAnswer = table[cx][cy][answerType]
+                if (!(cAnswer in weights))
+                  weights[cAnswer] = cx === x ? 10 : cy === y ? 5 : 1
+              }
+              choices.push(...wsamples(Object.entries(weights), 3))
+              shuffle(choices)
+
+              this.chosen = null
+              this.question = question
+              this.answer = answer
+              this.choices = choices
+            },
+            choose(choice) {
+              this.chosen = choice
+            },
+            next() {
+              if (this.chosen === null) {
+                if (!confirm("跳过本题")) return
+                this.chosen = ""
+                return
+              }
+
+              for (const romaji in romajiWeights)
+                romajiWeights[romaji] *= 1.075
+
+              if (this.chosen === this.answer) {
+                romajiWeights[getTableEntry(this.answer).romaji] = 0.2
+              } else {
+                romajiWeights[getTableEntry(this.answer).romaji] /= 2
+                if (this.chosen)
+                  romajiWeights[getTableEntry(this.chosen).romaji] *= 1.2
+              }
+
+              this.newQuestion()
+            },
+            getTableEntry: string => getTableEntry(string),
+            getChoiceColorClass(choice) {
+              if (this.chosen !== null) {
+                if (choice === this.answer) return "btn-success"
+                if (choice === this.chosen) return "btn-danger"
+              }
+              return "btn-light"
+            },
+            getNextColorClass() {
+              if (this.chosen !== null)
+                return this.chosen === this.answer ? "btn-success" : "btn-danger"
+              return "btn-warning"
+            }
+        }),
+        mounted() {
+          this.newQuestion()
+        }
+      })
+      vue.mount("#app")
+      document.write(' ok')
+    </script>
+  </body>
+</html>
