@@ -42,9 +42,9 @@
         >继续</button>
       </div>
       <!--<pre style="white-space:pre-wrap;overflow-wrap:break-word">{{ JSON.stringify(romajiWeights, null, 2) }}</pre>-->
-      <div v-for="(v, r) in romajiWeights" :style="{ fontSize: v * 2 + 'px' }" class="d-inline-block me-1">{{ r }}</div>
+      <!--<div v-for="(v, r) in romajiWeights" :style="{ fontSize: v * 2 + 'px' }" class="d-inline-block me-1">{{ r }}</div>-->
     </div>
-    <script>
+    <!--<script>
   window.onerror=(...{ [4]: e }) => alert(`${e}\n\n${e.stack}`)
   var _adl = function fun(r) {
     const s = new Error().stack
@@ -57,10 +57,10 @@
     }
     fun.n = t
   }
-    </script>
+    </script>-->
     <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4"></script>
     <script>
-      document.write('and..')
+      //document.write('and..')
 
       const table =
 [
@@ -192,7 +192,7 @@
             choices: ref([]),
             chosen: ref(null),
             kanaType: ref("hiragana"),
-            romajiWeights: Vue.computed(() => romajiWeights),
+            //romajiWeights: Vue.computed(() => romajiWeights),
             newQuestion() {
               const questionType = Math.random() < 0.5 ? "romaji" : this.kanaType
               const answerType = questionType === "romaji" ? this.kanaType : "romaji"
@@ -268,7 +268,7 @@
         }
       })
       vue.mount("#app")
-      document.write(' ok')
+      //document.write(' ok')
     </script>
   </body>
 </html>
