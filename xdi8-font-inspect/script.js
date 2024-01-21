@@ -78,7 +78,7 @@ const chatSingle = [...chatBasic, "", ..."X9WPJURZO0KQGISMC"]
 const chat = [
   "!`",
   ...chatSingle,
-  ...Array.from("srPRQk85mwYaNxOCqgvLp6$¥Wn", char => char + "`"),
+  ...Array.from("srPRQk85mwYaNxOCqgvLp6$¥yWn", char => char + "`"),
 ]
 
 function xdpua(ind, cas) {
