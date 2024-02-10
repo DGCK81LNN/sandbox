@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name=viewport content="width=device-width,initial-scale=1">
-    <title>五十音图记忆</title>
+    <title>五十音记忆</title>
     <link rel=stylesheet href="https://dgck81lnn.github.io/bootstrap-lnn/dist/bootstrap-lnn.min.css">
     <style>
       #question {
@@ -20,6 +20,14 @@
   </head>
   <body>
     <div id=app class="m-2">
+      <div class="d-flex justify-content-center">
+        <div class="btn-group" role="group">
+          <input type=radio class="btn-check" name=kanatype id=kanatype-hiragana value="hiragana" v-model="kanaType">
+          <label class="btn btn-outline-primary" for=kanatype-hiragana lang=ja>ひらがな</label>
+          <input type=radio class="btn-check" name=kanatype id=kanatype-katakana value="katakana" v-model="kanaType">
+          <label class="btn btn-outline-primary" for=kanatype-katakana lang=ja>カタカナ</label>
+        </div>
+      </div>
       <div id=question lang=ja class="my-5 text-center">
         {{ question }}
       </div>
@@ -31,7 +39,7 @@
             @click="choose(choice)"
           >
             <span v-if="chosen === null">{{ choice }}</span>
-            <ruby v-else><rb>{{ getTableEntry(choice)[kanaType] }}</rb><rt>{{ getTableEntry(choice).romaji }}</rt></ruby>
+            <ruby v-else>{{ getTableEntry(choice)[kanaType] }}<rt>{{ getTableEntry(choice).romaji }}</rt></ruby>
           </button>
         </div>
       </div>
@@ -44,6 +52,7 @@
       <!--<pre style="white-space:pre-wrap;overflow-wrap:break-word">{{ JSON.stringify(romajiWeights, null, 2) }}</pre>-->
       <!--<div v-for="(v, r) in romajiWeights" :style="{ fontSize: v * 2 + 'px' }" class="d-inline-block me-1">{{ r }}</div>-->
     </div>
+    <!--<script src="https://cdn.jsdelivr.net/npm/vconsole"></script><script>new VConsole</script>-->
     <!--<script>
   window.onerror=(...{ [4]: e }) => alert(`${e}\n\n${e.stack}`)
   var _adl = function fun(r) {
@@ -58,106 +67,128 @@
     fun.n = t
   }
     </script>-->
-    <script src="https://cdn.jsdelivr.net/npm/vue@3.3.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.4.18"></script>
     <script>
       //document.write('and..')
 
       const table =
 [
   [
-    { hiragana: "あ", romaji: "a" },
-    { hiragana: "い", romaji: "i" },
-    { hiragana: "う", romaji: "u" },
-    { hiragana: "え", romaji: "e" },
-    { hiragana: "お", romaji: "o" },
+    { hiragana: "あ", katakana: "ア", romaji: "a" },
+    { hiragana: "い", katakana: "イ", romaji: "i" },
+    { hiragana: "う", katakana: "ウ", romaji: "u" },
+    { hiragana: "え", katakana: "エ", romaji: "e" },
+    { hiragana: "お", katakana: "オ", romaji: "o" },
   ],
   [
-    { hiragana: "か", romaji: "ka" },
-    { hiragana: "き", romaji: "ki" },
-    { hiragana: "く", romaji: "ku" },
-    { hiragana: "け", romaji: "ke" },
-    { hiragana: "こ", romaji: "ko" },
+    { hiragana: "か", katakana: "カ", romaji: "ka" },
+    { hiragana: "き", katakana: "キ", romaji: "ki" },
+    { hiragana: "く", katakana: "ク", romaji: "ku" },
+    { hiragana: "け", katakana: "ケ", romaji: "ke" },
+    { hiragana: "こ", katakana: "コ", romaji: "ko" },
   ],
   [
-    { hiragana: "さ", romaji: "sa" },
-    { hiragana: "し", romaji: "shi" },
-    { hiragana: "す", romaji: "su" },
-    { hiragana: "せ", romaji: "se" },
-    { hiragana: "そ", romaji: "so" },
+    { hiragana: "さ", katakana: "サ", romaji: "sa" },
+    { hiragana: "し", katakana: "シ", romaji: "shi" },
+    { hiragana: "す", katakana: "ス", romaji: "su" },
+    { hiragana: "せ", katakana: "セ", romaji: "se" },
+    { hiragana: "そ", katakana: "ソ", romaji: "so" },
   ],
   [
-    { hiragana: "た", romaji: "ta" },
-    { hiragana: "ち", romaji: "chi" },
-    { hiragana: "つ", romaji: "tsu" },
-    { hiragana: "て", romaji: "te" },
-    { hiragana: "と", romaji: "to" },
+    { hiragana: "た", katakana: "タ", romaji: "ta" },
+    { hiragana: "ち", katakana: "チ", romaji: "chi" },
+    { hiragana: "つ", katakana: "ツ", romaji: "tsu" },
+    { hiragana: "て", katakana: "テ", romaji: "te" },
+    { hiragana: "と", katakana: "ト", romaji: "to" },
   ],
   [
-    { hiragana: "な", romaji: "na" },
-    { hiragana: "に", romaji: "ni" },
-    { hiragana: "ぬ", romaji: "nu" },
-    { hiragana: "ね", romaji: "ne" },
-    { hiragana: "の", romaji: "no" },
+    { hiragana: "な", katakana: "ナ", romaji: "na" },
+    { hiragana: "に", katakana: "ニ", romaji: "ni" },
+    { hiragana: "ぬ", katakana: "ヌ", romaji: "nu" },
+    { hiragana: "ね", katakana: "ネ", romaji: "ne" },
+    { hiragana: "の", katakana: "ノ", romaji: "no" },
   ],
   [
-    { hiragana: "は", romaji: "ha" },
-    { hiragana: "ひ", romaji: "hi" },
-    { hiragana: "ふ", romaji: "fu" },
-    { hiragana: "へ", romaji: "he" },
-    { hiragana: "ほ", romaji: "ho" },
+    { hiragana: "は", katakana: "ハ", romaji: "ha" },
+    { hiragana: "ひ", katakana: "ヒ", romaji: "hi" },
+    { hiragana: "ふ", katakana: "フ", romaji: "fu" },
+    { hiragana: "へ", katakana: "ヘ", romaji: "he" },
+    { hiragana: "ほ", katakana: "ホ", romaji: "ho" },
   ],
   [
-    { hiragana: "ま", romaji: "ma" },
-    { hiragana: "み", romaji: "mi" },
-    { hiragana: "む", romaji: "mu" },
-    { hiragana: "め", romaji: "me" },
-    { hiragana: "も", romaji: "mo" },
+    { hiragana: "ま", katakana: "マ", romaji: "ma" },
+    { hiragana: "み", katakana: "ミ", romaji: "mi" },
+    { hiragana: "む", katakana: "ム", romaji: "mu" },
+    { hiragana: "め", katakana: "メ", romaji: "me" },
+    { hiragana: "も", katakana: "モ", romaji: "mo" },
   ],
   [
-    { hiragana: "や", romaji: "ya" },
+    { hiragana: "や", katakana: "ヤ", romaji: "ya" },
     ,
-    { hiragana: "ゆ", romaji: "yu" },
+    { hiragana: "ゆ", katakana: "ユ", romaji: "yu" },
     ,
-    { hiragana: "よ", romaji: "yo" },
+    { hiragana: "よ", katakana: "ヨ", romaji: "yo" },
   ],
   [
-    { hiragana: "ら", romaji: "ra" },
-    { hiragana: "り", romaji: "ri" },
-    { hiragana: "る", romaji: "ru" },
-    { hiragana: "れ", romaji: "re" },
-    { hiragana: "ろ", romaji: "ro" },
+    { hiragana: "ら", katakana: "ラ", romaji: "ra" },
+    { hiragana: "り", katakana: "リ", romaji: "ri" },
+    { hiragana: "る", katakana: "ル", romaji: "ru" },
+    { hiragana: "れ", katakana: "レ", romaji: "re" },
+    { hiragana: "ろ", katakana: "ロ", romaji: "ro" },
   ],
-  [{ hiragana: "わ", romaji: "wa" }, , , , { hiragana: "を", romaji: "wo" }],
-  [, , , , , { hiragana: "ん", romaji: "n" }]
+  [
+    { hiragana: "わ", katakana: "ワ", romaji: "wa" },
+    ,
+    ,
+    ,
+    { hiragana: "を", katakana: "ヲ", romaji: "wo" }
+  ],
+  [, , , , , { hiragana: "ん", katakana: "ン", romaji: "n" }],
 ]
       const xyTable = Object.create(null)
-      const romajiWeights = Object.create(null)
+      const romajiWeights = {
+        hiragana: Object.create(null),
+        katakana: Object.create(null)
+      }
       const xys = table.flatMap((row, x) => {
         return row.map((cell, y) => {
           const xy = [x, y]
           xyTable[cell.hiragana] = xy
           xyTable[cell.katakana] = xy
           xyTable[cell.romaji] = xy
-          romajiWeights[cell.romaji] = 5
+          romajiWeights.hiragana[cell.romaji] = 5
+          romajiWeights.katakana[cell.romaji] = 5
           return xy
         })
       })
 
       const confusingGroups = [
-        [..."あめ"],
-        [..."ぬめ"],
-        [..."きまも"],
-        [..."いり"],
-        [..."こにた"],
-        [..."ほま"],
-        [..."きさ"],
-        [..."ちら"],
-        [..."さち"],
-        [..."たな"],
-        [..."ねれわ"],
-        [..."けは"],
-        [..."はほ"],
-        [..."るろ"],
+        "あめ",
+        "ぬめ",
+        "きまも",
+        "いり",
+        "こにた",
+        "ほま",
+        "きさ",
+        "ちら",
+        "さち",
+        "たな",
+        "ねれわ",
+        "けは",
+        "はほ",
+        "るろ",
+        "ウワ",
+        "ワフ",
+        "フヲ",
+        "クケ",
+        "クタ",
+        "セヤ",
+        "ソンシツ",
+        "スヌマ",
+        "マム",
+        "チテ",
+        "ネホ",
+        "ナメ",
       ]
 
       function sample(array) {
@@ -183,86 +214,94 @@
         results.sort(([, k1], [, k2]) => k2 - k1)
         return results.slice(0, m).map(([v, k]) => v)
       }
-      const { ref } = Vue
 
       vue = Vue.createApp({
-        setup: () => ({
-            question: ref(""),
-            answer: ref(""),
-            choices: ref([]),
-            chosen: ref(null),
-            kanaType: ref("hiragana"),
-            //romajiWeights: Vue.computed(() => romajiWeights),
-            newQuestion() {
-              const questionType = Math.random() < 0.5 ? "romaji" : this.kanaType
-              const answerType = questionType === "romaji" ? this.kanaType : "romaji"
-              const [x, y] = xyTable[wsamples(Object.entries(romajiWeights), 1)[0]]
-              const cell = table[x][y]
-              const kana = cell[this.kanaType]
-              const question = cell[questionType]
-              const answer = cell[answerType]
-              const choices = [answer]
-
-              const weights = Object.create(null)
-              for (const group of confusingGroups) {
-                if (!group.includes(kana)) continue
-                for (const cKana of group) {
-                  if (cKana === kana) continue
-                  const cAnswer = getTableEntry(cKana)[answerType]
-                  weights[cAnswer] = 100
-                }
-              }
-              for (const [cx, cy] of xys) {
-                if (cx === x && cy === y) continue
-                const cAnswer = table[cx][cy][answerType]
-                if (!(cAnswer in weights))
-                  weights[cAnswer] = cx === x ? 10 : cy === y ? 5 : 1
-              }
-              choices.push(...wsamples(Object.entries(weights), 3))
-              shuffle(choices)
-
-              this.chosen = null
-              this.question = question
-              this.answer = answer
-              this.choices = choices
-            },
-            choose(choice) {
-              this.chosen = choice
-            },
-            next() {
-              if (this.chosen === null) {
-                if (!confirm("跳过本题")) return
-                this.chosen = ""
-                return
-              }
-
-              for (const romaji in romajiWeights)
-                romajiWeights[romaji] *= 1.075
-
-              if (this.chosen === this.answer) {
-                romajiWeights[getTableEntry(this.answer).romaji] = 0.2
-              } else {
-                romajiWeights[getTableEntry(this.answer).romaji] /= 2
-                if (this.chosen)
-                  romajiWeights[getTableEntry(this.chosen).romaji] *= 1.2
-              }
-
-              this.newQuestion()
-            },
-            getTableEntry: string => getTableEntry(string),
-            getChoiceColorClass(choice) {
-              if (this.chosen !== null) {
-                if (choice === this.answer) return "btn-success"
-                if (choice === this.chosen) return "btn-danger"
-              }
-              return "btn-light"
-            },
-            getNextColorClass() {
-              if (this.chosen !== null)
-                return this.chosen === this.answer ? "btn-success" : "btn-danger"
-              return "btn-warning"
-            }
+        data: () => ({
+          question: "",
+          answer: "",
+          choices: [],
+          chosen: null,
+          kanaType: "hiragana"
         }),
+        watch: {
+          kanaType: {
+            handler() {
+              this.newQuestion()
+            }
+          }
+        },
+        methods: {
+          newQuestion() {
+            const questionType = Math.random() < 0.5 ? "romaji" : this.kanaType
+            const answerType = questionType === "romaji" ? this.kanaType : "romaji"
+            const [x, y] = xyTable[wsamples(Object.entries(romajiWeights[this.kanaType]), 1)[0]]
+            const cell = table[x][y]
+            const kana = cell[this.kanaType]
+            const question = cell[questionType]
+            const answer = cell[answerType]
+            const choices = [answer]
+
+            const weights = Object.create(null)
+            for (const group of confusingGroups) {
+              if (!group.includes(kana)) continue
+              for (const cKana of group) {
+                if (cKana === kana) continue
+                const cAnswer = getTableEntry(cKana)[answerType]
+                weights[cAnswer] = 100
+              }
+            }
+            for (const [cx, cy] of xys) {
+              if (cx === x && cy === y) continue
+              const cAnswer = table[cx][cy][answerType]
+              if (!(cAnswer in weights))
+                weights[cAnswer] = cx === x ? 10 : cy === y ? 5 : 1
+            }
+            choices.push(...wsamples(Object.entries(weights), 3))
+            shuffle(choices)
+
+            this.chosen = null
+            this.question = question
+            this.answer = answer
+            this.choices = choices
+          },
+          choose(choice) {
+            this.chosen = choice
+          },
+          next() {
+            if (this.chosen === null) {
+              if (!confirm("显示答案")) return
+              this.chosen = ""
+              return
+            }
+
+            const w = romajiWeights[this.kanaType]
+            for (const romaji in w)
+              w[romaji] *= 1.075
+
+            if (this.chosen === this.answer) {
+              w[getTableEntry(this.answer).romaji] = 0.2
+            } else {
+              w[getTableEntry(this.answer).romaji] /= 2
+              if (this.chosen)
+                w[getTableEntry(this.chosen).romaji] *= 1.2
+            }
+
+            this.newQuestion()
+          },
+          getTableEntry: string => getTableEntry(string),
+          getChoiceColorClass(choice) {
+            if (this.chosen !== null) {
+              if (choice === this.answer) return "btn-success"
+              if (choice === this.chosen) return "btn-danger"
+            }
+            return "btn-light"
+          },
+          getNextColorClass() {
+            if (this.chosen)
+              return this.chosen === this.answer ? "btn-success" : "btn-danger"
+            return "btn-warning"
+          }
+        },
         mounted() {
           this.newQuestion()
         }
