@@ -126,7 +126,7 @@ group("全角聊天字母码位", function* () {
     yield char && String.fromCodePoint(char.codePointAt(0) + 0xfee0)
 })
 group("扩展拉丁字母码位", function* () {
-  for (const char of "[\\]" + chatSingle)
+  for (const char of [..."[\\]", ...chatSingle])
     yield char && String.fromCodePoint(char.codePointAt(0) + 151)
 })
 group("UCSUR 码位", function* () {
