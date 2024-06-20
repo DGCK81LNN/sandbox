@@ -36,6 +36,7 @@
     </style>
     <script src="https://dgck81lnn.github.io/codemirror-lnn/dist/codemirror-lnn.min.js"></script>
     <script src="https://dgck81lnn.github.io/js/utils.js"></script>
+    <script src="https://dgck81lnn.github.io/sandbox/fflate-deflate-inflate.min.js"></script>
   </head>
   <body>
     <h1>
@@ -70,6 +71,8 @@
         out &larr; utf-8 + base64
         <button id=btn-b64e>encode</button>
         <button id=btn-b64d>decode</button>
+        <button id=btn-b64ze>encode deflate</button>
+        <button id=btn-b64zd>decode inflate</button>
         text
       </div>
       <div>
@@ -194,6 +197,9 @@
           },
           dump: dump,
           inspect: inspect,
+          eval: doEval,
+          deflateB64UTF8: deflateB64UTF8,
+          inflateB64UTF8: inflateB64UTF8,
           CodeArea: CodeArea
         }
 
@@ -248,9 +254,8 @@
         /** @type {new (...args: string[]) => (...args) => Promise<unknown>} */
         const AsyncFunction = (async function () {}).constructor
         let evalNonce = 0
-        addAction("eval", () => {
+        function doEval(code) {
           SoulLS.out = ""
-          const code = SoulLS.code
 
           let useEval = true
           try {
@@ -273,6 +278,9 @@
           } catch (err) {
             appendOutput(err, "error")
           }
+        }
+        addAction("eval", () => {
+          doEval(SoulLS.code)
         })
 
         function codePointToEscape(cp) {
@@ -318,6 +326,18 @@
         })
         addAction("b64d", () => {
           SoulLS.out = Base64LNN.decodeUTF8(SoulLS.text)
+        })
+        function deflateB64UTF8(str) {
+          return Base64LNN.encode(fflate.deflateSync(new TextEncoder().encode(str)))
+        }
+        function inflateB64UTF8(str) {
+          return new TextDecoder().decode(fflate.inflateSync(Base64LNN.decode(str)))
+        }
+        addAction("b64ze", () => {
+          SoulLS.out = deflateB64UTF8(SoulLS.text)
+        })
+        addAction("b64zd", () => {
+          SoulLS.out = inflateB64UTF8(SoulLS.text)
         })
 
         addAction("urie", () => {
@@ -390,6 +410,23 @@
         addAction("swapct", () => {
           ;[SoulLS.code, SoulLS.text] = [SoulLS.text, SoulLS.code]
         })
+
+        const hash = location.hash.slice(1)
+        if (hash.match(/^[+/0-9A-Za-z]{2,}={0,2}$/)) {
+          let code = ""
+          try {
+            code = inflateB64UTF8(hash)
+          } catch (err) {
+            code =
+              "/*\n! SoulLS LOAD ERROR !\n" +
+              String(err).replace(/\/[\\]*(?=\*)|\*[\\]*(?=\/)/g, e => `${e[0]}\\${e.slice(1)}`) +
+              "\n*/\n"
+            throw err
+          } finally {
+            SoulLS.code = code
+          }
+          SoulLS.eval(code)
+        }
       })()
     </script>
   </body>
