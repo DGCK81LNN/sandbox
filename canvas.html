@@ -1,0 +1,424 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>canvas sandbox</title>
+    <meta name=viewport content="width=device-width, initial-scale=1, maximum-scale=1">
+    <style>
+      * {
+        font-family: inherit;
+        -webkit-overflow-scrolling: touch;
+      }
+      :root { font-family: -apple-system,Segoe UI,Roboto,system-ui,Helvetica Neue,Arial,Noto Sans,Liberation Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji }
+      input:not([type=file]), textarea {
+        background-color: rgba(128, 128, 128, 0.05);
+        color: inherit;
+        border: 1px solid #808080;
+        border-radius: 0.25rem;
+      }
+      input:not([type=file]), textarea, pre, code {
+        font-size: 0.875em;
+        font-family: Sarasa Mono SC,Iosevka,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace;
+      }
+      button {
+        font-size: 0.875em;
+        padding: 3px 6px;
+      }
+      button[disabled] {
+        opacity: 0.6;
+      }
+      #cvswrap {
+        width: fit-content;
+        max-width: 100%;
+        max-height: 80vh;
+        overflow: auto;
+        border: 1px dotted #808080;
+      }
+      canvas, img {
+        image-rendering: pixelated;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path d="M0,0H8V16H16V8H0Z" fill="rgba(0,0,0,0.2)"/></svg>') repeat;
+        background-color: rgba(255,255,255,0.5);
+        border: 1px dotted #808080;
+        margin: -1px;
+      }
+      #actions {
+        margin-bottom: 25vh;
+      }
+      h3 {
+        margin: 0.5rem 0 0;
+        font-size: 0.8rem;
+      }
+      input[type=text] { width: 5em; }
+      input[type=number] { width: 2.5em; }
+      summary {
+        font-size: 0.75rem;
+      }
+      summary>h4 {
+        display: inline-block;
+        margin: 0;
+        font-size: 0.75rem;
+      }
+      pre {
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+      }
+
+      @media screen and (prefers-color-scheme: dark) {
+        html {
+          background-color: black;
+          color: white;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>canvas sandbox</h1>
+    <section id=cvswrap>
+      <canvas id=cvs></canvas>
+    </section>
+    <section id=actions>
+      <section id=a-mode>
+        <h3>mode</h3>
+        <input type=radio name=a-mode id=a-mode-f checked>
+        <label for=a-mode-f>fill</label>
+        <input type=radio name=a-mode id=a-mode-c>
+        <label for=a-mode-c>clear</label>
+        <input type=radio name=a-mode id=a-mode-d>
+        <label for=a-mode-d>getcolor</label>
+      </section>
+      <section id=a-resize>
+        <h3>resize</h3>
+        <input type=number id=a-resize-w placeholder="w">
+        <input type=number id=a-resize-h placeholder="h">
+        <button id=a-resize-r>clear & resize</button>
+        <input type=number id=a-scale-r placeholder="ratio">
+      </section>
+      <section id=a-rect>
+        <h3>rect</h3>
+        <input type=number id=a-rect-x value=0 placeholder="x">
+        <input type=number id=a-rect-y value=0 placeholder="y">
+        <input type=number id=a-rect-w value=1 placeholder="w">
+        <input type=number id=a-rect-h value=1 placeholder="h">
+        <br>
+        <input type=text id=a-rect-fc value="#000000" placeholder="color">
+        <button id=a-rect-f>fill</button>
+        <button id=a-rect-c>clear</button>
+        <button id=a-rect-d>getcolor</button>
+      </section >
+      <section id=a-hist>
+        <h3>hist</h3>
+        <button id=a-hist-u disabled>undo</button>
+        <button id=a-hist-r disabled>redo</button>
+      </section>
+      <section id=a-img>
+        <h3>img</h3>
+        <img id=a-img-p style="max-width: 100%; max-height: 80rem;">
+        <div id=a-img-i style="display: inline-block;"></div>
+        <br>
+        <input id=a-img-u placeholder="url">
+        <button id=a-img-l>load</button>
+        <input type=file id=a-img-f accept="image/*">
+        <br>
+        <div style="display: inline-block;">
+          <input type=number id=a-img-sx value=0 placeholder="sx">
+          <input type=number id=a-img-sy value=0 placeholder="sy">
+          <input type=number id=a-img-sw placeholder="sw">
+          <input type=number id=a-img-sh placeholder="sh">
+        </div>
+        <div style="display: inline-block;">
+          <input type=number id=a-img-dx value=0 placeholder="dx">
+          <input type=number id=a-img-dy value=0 placeholder="dy">
+          <input type=number id=a-img-dw placeholder="dw">
+          <input type=number id=a-img-dh placeholder="dh">
+        </div>
+        <div style="display: inline-block;">
+          <button id=a-img-d>draw</button>
+          <input type=checkbox id=a-img-p>
+          <label for=a-img-p>pixl</label>
+        </div>
+      </section>
+      <section id=a-save>
+        <h3>save</h3>
+        <button id=a-save-s>png</button>
+        <button id=a-save-j>jpg</button>
+        <button id=a-save-i>img &larr;</button>
+      </section>
+      <section id=a-minilab>
+        <h3>minilab</h3>
+        <textarea id=a-minilab-c
+          placeholder=""
+          
+style="width: 100%; height: 10em; box-sizing: border-box;"></textarea>
+        <section>
+          <details>
+            <summary><h4>documentation</h4></summary>
+            <pre
+>declare const cvs: HTMLCanvasElement
+declare const cxt: CanvasRenderingContext2D
+declare const img: HTMLImageElement
+var maxUndoHistoryBytes = 0x80000000 // 128 MiB
+
+/* call before making changes to cvs to preserve undo history */
+declare function undoable(): void
+
+declare function toBlob(type = "image/png", quality?: number): Promise&lt;Blob>
+declare function toBlobURL(type = "image/png", quality?: number): Promise&lt;string></pre>
+          </details>
+        </section>
+      </section>
+    </section>
+<script>//debug
+window.onerror=(...{ [4]: e }) => alert(`${e}\n\n${e.stack}`)</script>
+    <script>
+      const $$$ = document.getElementById.bind(document)
+      const cvs = $$$("cvs")
+      const cxt = cvs.getContext("2d")
+      const img = document.createElement("img")
+      const undoList = []
+      const redoList = []
+      let maxUndoHistoryBytes = 0x8000000 // 128 MiB
+
+      function action(func, noHist) {
+        return function (...args) {
+          let r
+          try {
+            r = func.apply(this, args)
+          } catch (err) {
+            alert(err)
+            throw err
+          }
+          if (r instanceof Promise)
+            r.catch(err => {
+              alert(err)
+              throw err
+            })
+        }
+      }
+
+      function undoable() {
+        try {
+          undoList.push(cxt.getImageData(0, 0, cvs.width, cvs.height))
+        } catch (_) {
+          return
+        }
+
+        redoList.length = 0
+
+        let totalBytes = undoList.reduce((acc, cur) => acc + cur.data.length, 0)
+        while (undoList.length > 1 && totalBytes > maxUndoHistoryBytes) {
+          const removed = undoList.shift()
+          totalBytes -= removed.data.length
+        }
+
+        updateHistorySize()
+      }
+
+      function updateHistorySize() {
+        Object.assign(
+          $$$("a-hist-u"),
+          {
+            textContent: `undo${undoList.length ? ` (${undoList.length})` : ""}`,
+            disabled: undoList.length === 0
+          }
+        )
+        Object.assign(
+          $$$("a-hist-r"),
+          {
+            textContent: `redo${redoList.length ? ` (${redoList.length})` : ""}`,
+            disabled: redoList.length === 0
+          }
+        )
+      }
+
+      cvs.onclick = action(function (ev) {
+        ev.preventDefault()
+        $$$("a-rect-x").value = ~~(ev.offsetX / cvs.clientWidth * cvs.width)
+        $$$("a-rect-y").value = ~~(ev.offsetY / cvs.clientHeight * cvs.height)
+        if ($$$("a-mode-f").checked) return fillRect()
+        if ($$$("a-mode-c").checked) return clearRect()
+        if ($$$("a-mode-d").checked) return getColor()
+      })
+
+      $$$("a-resize-w").value = cvs.width
+      $$$("a-resize-h").value = cvs.height
+      function resize() {
+        undoable()
+        cvs.width = +$$$("a-resize-w").value
+        cvs.height = +$$$("a-resize-h").value
+
+        updateSizeInput()
+        scale()
+      }
+      function updateSizeInput() {
+        $$$("a-resize-w").value = cvs.width
+        $$$("a-resize-h").value = cvs.height
+      }
+      $$$("a-resize-r").onclick = action(resize)
+
+      $$$("a-scale-r").value = window.devicePixelRatio || 1
+      function scale() {
+        const ratio = +$$$("a-scale-r").value / (window.devicePixelRatio || 1)
+        cvs.style.width = `${cvs.width * ratio}px`
+      }
+      $$$("a-scale-r").onchange = action(scale)
+
+      function fillRect() {
+        undoable()
+        cxt.fillStyle = $$$("a-rect-fc").value
+        cxt.fillRect(
+          +$$$("a-rect-x").value,
+          +$$$("a-rect-y").value,
+          +$$$("a-rect-w").value,
+          +$$$("a-rect-h").value,
+        )
+      }
+      $$$("a-rect-f").onclick = action(fillRect)
+      function clearRect() {
+        undoable()
+        cxt.clearRect(
+          +$$$("a-rect-x").value,
+          +$$$("a-rect-y").value,
+          +$$$("a-rect-w").value,
+          +$$$("a-rect-h").value,
+        )
+      }
+      $$$("a-rect-c").onclick = action(clearRect)
+      function getColor() {
+        const rgba = cxt.getImageData(+$$$("a-rect-x").value, +$$$("a-rect-y").value, 1, 1).data
+        $$$("a-rect-fc").value = toColorValue(...rgba)
+      }
+      $$$("a-rect-d").onclick = action(getColor)
+
+      function toColorValue(r, g, b, a) {
+        if (a === 0) return "transparent"
+        if (a === 255) {
+          return "#" + [r, g, b].map(n => n.toString(16).padStart(2, "0")).join("")
+        }
+        let alpha = Math.round(a / 2.55)
+        if (Math.round(alpha * 2.55) !== a) alpha = (a / 2.55).toFixed(1)
+        return `rgba(${r},${g},${b},${alpha}%)`
+      }
+
+      function undo() {
+        const d = undoList.pop()
+        if (!d) return
+        try {
+          redoList.push(cxt.getImageData(0, 0, cvs.width, cvs.height))
+        } catch (_) {}
+        cvs.width = d.width
+        cvs.height = d.height
+        cxt.putImageData(d, 0, 0)
+        scale()
+        updateSizeInput()
+        updateHistorySize()
+      }
+      $$$("a-hist-u").onclick = action(undo)
+      function redo() {
+        const d = redoList.pop()
+        if (!d) return
+        undoList.push(cxt.getImageData(0, 0, cvs.width, cvs.height))
+        cvs.width = d.width
+        cvs.height = d.height
+        cxt.putImageData(d, 0, 0)
+        scale()
+        updateSizeInput()
+        updateHistorySize()
+      }
+      $$$("a-hist-r").onclick = action(redo)
+
+      img.onload = function () {
+        const w = this.naturalWidth
+        const h = this.naturalHeight
+        this.width = w
+        this.height = h
+        $$$("a-img-i").textContent = `${w}x${h}`
+        $$$("a-img-p").src = img.src
+        $$$("a-img-sw").value = w
+        $$$("a-img-sh").value = h
+        const ratio = Math.min(1, cvs.width / w, cvs.height / h)
+        $$$("a-img-dw").value = +(w * ratio).toFixed(2)
+        $$$("a-img-dh").value = +(h * ratio).toFixed(2)
+      }
+      img.onerror = function () {
+        alert("img load failed")
+        $$$("a-img-p").src = ""
+      }
+      $$$("a-img-sw").oninput = function () {
+        if (this.value) $$$("a-img-dw").value = this.value
+      }
+      $$$("a-img-sh").oninput = function () {
+        if (this.value) $$$("a-img-dh").value = this.value
+      }
+      $$$("a-img-l").onclick = action(function () {
+        img.src = $$$("a-img-u").value
+      })
+      $$$("a-img-f").onchange = action(function () {
+        if (!this.files[0]) return
+        img.src = URL.createObjectURL(this.files[0])
+      })
+      function drawImage() {
+        undoable()
+        cxt.imageSmoothingEnabled = !$$$("a-img-p").checked
+        cxt.drawImage(
+          img,
+          +$$$("a-img-sx").value,
+          +$$$("a-img-sy").value,
+          +$$$("a-img-sw").value,
+          +$$$("a-img-sh").value,
+          +$$$("a-img-dx").value,
+          +$$$("a-img-dy").value,
+          +$$$("a-img-dw").value,
+          +$$$("a-img-dh").value
+        )
+      }
+      $$$("a-img-d").onclick = action(drawImage)
+
+      $$$("a-minilab-c").onblur = action(function () {
+        const r = (0, eval)(this.value)
+        if (r !== undefined) alert(String(r))
+      })
+
+      function toBlob(...opt) {
+        return new Promise((res, rej) => {
+          cvs.toBlob(blob => {
+            if (!blob) {
+              alert("failed to export")
+              rej()
+            }
+            res(blob)
+          }, ...opt)
+        })
+      }
+      function toBlobURL(...opt) {
+        return toBlob(...opt)
+          .then(blob => URL.createObjectURL(blob))
+      }
+      $$$("a-save-s").onclick = action(async function () {
+        const a = document.createElement("a")
+        a.href = await toBlobURL()
+        a.download = "out.png"
+        a.click()
+      })
+      $$$("a-save-j").onclick = action(async function () {
+        const q = prompt("quality", "0.98")
+        if (!q || isNaN(+q)) return
+        const a = document.createElement("a")
+        a.href = await toBlobURL("image/jpeg", +q)
+        a.download = "out.jpg"
+        a.click()
+      })
+      $$$("a-save-i").onclick = action(async function () {
+        img.src = $$$("a-img-u").value = await toBlobURL()
+      })
+
+      function select() {
+        this.select()
+      }
+      for (const $i of document.querySelectorAll("input")) {
+        $i.onfocus = select
+      }
+
+      img.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 -45 150 150"><path d="M0,0v60l52,30,26,-15v-90l-26,-15L0,0l26,15,52,-30m-52,30v30l78,-45,26,15v30l-26,15,-52,-30m26,-15l26,15,26,-15m-26,15v30M26,45l26,15,26,-15m-26,15v30" fill="none" stroke="black" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    </script>
+  </body>
+</html>
