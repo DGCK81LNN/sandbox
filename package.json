@@ -1,5 +1,6 @@
 {
   "devDependencies": {
-    "@dgck81lnn/codemirror-lnn": "^0.2.0"
+    "@dgck81lnn/codemirror-lnn": "^0.2.0",
+    "typescript": "^5.6.3"
   }
 }

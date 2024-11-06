@@ -19,7 +19,7 @@
         font-size: 0.875em;
         font-family: Sarasa Term SC,Sarasa Mono SC,Iosevka,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace
       }
-      input, button { font-size: 0.875em }
+      input, button, select { font-size: 0.875em }
       button { padding: 3px 6px }
       #codeToolbarDiv > div { display: inline-block }
       #codeDiv .cm-editor { height: 20rem }
@@ -106,6 +106,28 @@
         <button id=btn-swapto>text, out</button>
         <button id=btn-swapct>code, text</button>
       </div>
+      <div>
+        [<select id=sel-moreactions>
+          <option id=selopt-moreactions-initial>…more</option>
+          <option value="font">font</option>
+          <option value="opfs">opfs</option>
+        </select>actions]
+        <span id=moreActionsContainer>
+          <span id=fontactions hidden>
+            <button id=btn-font-load>load fonts</button>
+            <button id=btn-font-unload-all>unload all</button>
+          </span>
+          <span id=opfsactions hidden>
+            <button id=btn-opfs-load>load</button>
+            <button id=btn-opfs-save>save</button>
+            <button id=btn-opfs-delete>delete</button>
+            <select id=sel-opfs-file></select>
+            file
+            |
+            <button id=btn-opfs-mkdir>mkdir</button>
+          </span>
+        </span>
+      </div>
     </div>
     <div id=textAndOut>
       <textarea id=text placeholder="$text"
@@ -119,7 +141,7 @@
     <input type=file id=file style="display:none">
     <script>
       function $$$(id) { return document.getElementById(id) }
-      ;(function (){
+      ;(function () {
         /** @type {typeof import("@dgck81lnn/codemirror-lnn")} */
         const CodeMirror = window.CodeMirror
 
@@ -195,12 +217,27 @@
           get myDiv() {
             return this.$myDiv
           },
-          dump: dump,
-          inspect: inspect,
+          dump,
+          inspect,
           eval: doEval,
-          deflateB64UTF8: deflateB64UTF8,
-          inflateB64UTF8: inflateB64UTF8,
-          CodeArea: CodeArea
+          deflateB64UTF8,
+          inflateB64UTF8,
+          CodeArea: CodeArea,
+          loadScript(src) {
+            return new Promise((res, rej) => {
+              const script = document.createElement("script")
+              script.onload = () => {
+                res()
+                script.remove()
+              }
+              script.onerror = () => {
+                rej(`Failed to load script at ${src}`)
+                script.remove()
+              }
+              script.src = src
+              document.documentElement.appendChild(script)
+            })
+          }
         }
 
         function inspect(val) {
@@ -215,39 +252,42 @@
           if (val !== undefined || type) console[type || "dir"](val)
         }
 
-        function addAction(id, handler, isEditorCommand) {
+        function addAction(id, handler) {
           const $btn = $$$("btn-" + id)
           $btn.addEventListener("click", handler)
-          if (isEditorCommand)
-            $btn.addEventListener("mousedown", ev => { ev.preventDefault() })
+        }
+        function addEditorAction(id, handler) {
+          const $btn = $$$("btn-" + id)
+          $btn.addEventListener("click", handler)
+          $btn.addEventListener("mousedown", ev => { ev.preventDefault() })
         }
 
-        addAction("cm-selectall", () => {
+        addEditorAction("cm-selectall", () => {
           CodeMirror.commands.selectAll(SoulLS.$code.view)
-        }, true)
-        addAction("cm-undo", () => {
+        })
+        addEditorAction("cm-undo", () => {
           CodeMirror.commands.undo(SoulLS.$code.view)
-        }, true)
-        addAction("cm-redo", () => {
+        })
+        addEditorAction("cm-redo", () => {
           CodeMirror.commands.redo(SoulLS.$code.view)
-        }, true)
-        addAction("cm-shiftright", () => {
+        })
+        addEditorAction("cm-shiftright", () => {
           CodeMirror.commands.indentMore(SoulLS.$code.view)
-        }, true)
-        addAction("cm-shiftleft", () => {
+        })
+        addEditorAction("cm-shiftleft", () => {
           CodeMirror.commands.indentLess(SoulLS.$code.view)
-        }, true)
-        addAction("cm-find", () => {
+        })
+        addEditorAction("cm-find", () => {
           CodeMirror.search.searchPanelOpen(SoulLS.$code.view.state) ?
             CodeMirror.search.closeSearchPanel(SoulLS.$code.view) :
             CodeMirror.search.openSearchPanel(SoulLS.$code.view)
-        }, true)
-        addAction("cm-autoindent", () => {
+        })
+        addEditorAction("cm-autoindent", () => {
           CodeMirror.commands.indentSelection(SoulLS.$code.view)
-        }, true)
-        addAction("cm-completion", () => {
+        })
+        addEditorAction("cm-completion", () => {
           CodeMirror.autocomplete.startCompletion(SoulLS.$code.view)
-        }, true)
+        })
 
         var showEvalOut = true
         const evalFunc = eval
@@ -410,6 +450,242 @@
         addAction("swapct", () => {
           ;[SoulLS.code, SoulLS.text] = [SoulLS.text, SoulLS.code]
         })
+
+        $$$("sel-moreactions").addEventListener("change", e => {
+          $$$("selopt-moreactions-initial")?.remove()
+          const cat = e.target.value
+          for (const el of $$$("moreActionsContainer").children) {
+            el.hidden = el.id !== `${cat}actions`
+          }
+        })
+
+        // fontactions
+        {
+          const $file = document.createElement("input")
+          $file.type = "file"
+          $file.multiple = true
+          $file.accept = ".ttf,.otf,.woff,.woff2"
+          addAction("font-load", () => {
+            $file.click()
+          })
+          $file.addEventListener("change", () => {
+            for (const file of $file.files) {
+              let name = file.name
+              const i = name.lastIndexOf(".")
+              if (!["ttf", "otf", "woff", "woff2"].includes(name.slice(i + 1))) continue
+              let style = "normal"
+              let weight = "normal"
+              name = name
+                .slice(0, i)
+                .replace(/\bbold\b/i, () => ((weight = "bold"), ""))
+                .replace(/\bitalic\b/i, () => ((style = "italic"), ""))
+                .replace(/\bregular\b/i, "")
+                .trim()
+              const url = URL.createObjectURL(file)
+              const face = new FontFace(name, `url(${url})`, { weight, style })
+              face._fontActions_url = url
+              document.fonts.add(face)
+              face.load()
+            }
+          })
+          addAction("font-unload-all", () => {
+            for (const t of [...document.fonts]) {
+              if ("_fontActions_url" in t) {
+                document.fonts.delete(t)
+                URL.revokeObjectURL(t._fontActions_url)
+              }
+            }
+          })
+          SoulLS.fontActions = { $file }
+        }
+
+        // opfsactions
+        {
+          const workerFun = function () {
+            onmessage = async ({ data }) => {
+              try {
+                let dir = await navigator.storage.getDirectory()
+                for (const p of data.path) dir = await dir.getDirectoryHandle(p)
+                if (data.action === "writeFile") {
+                  const file = await dir.getFileHandle(data.name, { create: true })
+                  const handle = await file.createSyncAccessHandle()
+                  handle.write(data.data)
+                  handle.flush()
+                  handle.close()
+                } else {
+                  throw new RangeError("opfs worker: invalid action")
+                }
+                postMessage({ nonce: data.nonce })
+              } catch (error) {
+                postMessage({ nonce: data.nonce, error })
+              }
+            }
+            postMessage({ message: "init ok" })
+          }
+
+          /** @type {FileSystemDirectoryHandle} */
+          let opfs
+          /** @type {string[]} */
+          let path = []
+          /** @type {string[]} */
+          let subdirs
+          /** @type {Worker} */
+          let worker
+          const $select = $$$("sel-opfs-file")
+          $$$("sel-moreactions").addEventListener("change", async function f(e) {
+            if (e.target.value !== "opfs") return
+            e.currentTarget.removeEventListener("change", f)
+            try {
+              opfs = await navigator.storage.getDirectory()
+              update()
+            } catch (err) {
+              $$$("opfsactions").textContent = String(err)
+              console.error(err)
+            }
+          })
+          const update = async () => {
+            let dir = opfs
+            let level = 0
+            try {
+              for (const p of path) {
+                dir = await dir.getDirectoryHandle(p)
+                level++
+              }
+            } catch (err) {
+              alert(err)
+              path.splice(level)
+            }
+            $select.textContent = ""
+            const $group = $select.appendChild(Object.assign(document.createElement("optgroup"), {
+              label: path.join("/") || "/"
+            }))
+            if (path.length)
+              $group.append(Object.assign(document.createElement("option"), {
+                value: "..",
+                textContent: "../"
+              }))
+            $group.append(Object.assign(document.createElement("option"), {
+              value: ".",
+              textContent: path.length ? `./ (${path.slice(-1)})` : "/"
+            }))
+            $select.value = "."
+            /** @type {HTMLOptionElement[]} */
+            const $dirs = []
+            /** @type {HTMLOptionElement[]} */
+            const $files = []
+            subdirs = []
+            for await (const [n, e] of dir) {
+              if (e.kind === "directory") subdirs.push(n)
+              const arr = e.kind === "directory" ? $dirs : $files
+              arr.push(Object.assign(document.createElement("option"), {
+                value: n,
+                textContent: e.kind === "directory" ? n + "/" : n
+              }))
+            }
+            for (const e of $dirs.concat($files)) $group.append(e)
+          }
+          const initWorker = () => {
+            if (worker) return
+            worker = new Worker(
+              URL.createObjectURL(
+                new Blob([`(${workerFun})()`], { type: 'application/javascript' })
+              )
+            )
+            worker.onmessage = ({ data }) => {
+              if (!resMap.has(data.nonce)) return
+              const res = resMap.get(data.nonce)
+              resMap.delete(data.nonce)
+              if ("error" in data) res(Promise.reject(data.error))
+              else res()
+            }
+          }
+          $select.addEventListener("change", () => {
+            if ($select.value === "..") {
+              path.pop()
+              update()
+            } else if (subdirs.includes($select.value)) {
+              path.push($select.value)
+              update()
+            }
+          })
+          addAction("opfs-load", async () => {
+            if ($select.value === ".") return alert("select a file")
+            const file = await SoulLS.opfsActions.getFile(path.concat($select.value))
+            SoulLS.out = await file.text()
+          })
+          addAction("opfs-save", () => {
+            const _val = $select.value
+            let name = _val
+            if (name === ".") {
+              name = prompt("filename", `新建文本文档${Date.now()}.txt`)
+              if (!name) return
+            }
+            SoulLS.opfsActions.writeFile(path.concat(name), SoulLS.text)
+              .then(() => {
+                alert(`successfully saved "${path.concat(name).join("/")}"`)
+                if (_val === ".") update().then(() => { $select.value = name })
+              })
+              .catch(alert)
+          })
+          addAction("opfs-delete", async () => {
+            const _val = $select.value
+            if (!path.length && _val === ".") return alert("select a file or directory")
+            let path_ = path
+            if (_val !== ".") path_ = path.concat(_val)
+            if (!confirm(`really delete${_val === "." ? " directory" : ""} "${path_.join("/")}"?\n`.repeat(10).trimEnd())) return
+            SoulLS.opfsActions.remove(path_, { recursive: true })
+              .then(() => {
+                if (_val === ".") path.pop()
+                update()
+              })
+              .catch(alert)
+          })
+          addAction("opfs-mkdir", async () => {
+            const name = prompt("name")
+            if (!name) return
+            SoulLS.opfsActions.mkdir(path.concat(name))
+              .then(() => {
+                path.push(name)
+                update()
+              })
+              .catch(alert)
+          })
+
+          let nonce = 1
+          let resMap = new Map()
+          const dn = async function (path) {
+            path = Array.prototype.slice.call(path)
+            const name = path.pop()
+            let dir = opfs
+            for (const p of path) dir = await dir.getDirectoryHandle(p)
+            return [dir, name]
+          }
+          SoulLS.opfsActions = {
+            async getFile(path) {
+              const [dir, name] = await dn.call(this, path)
+              const file = await dir.getFileHandle(name)
+              return file.getFile()
+            },
+            writeFile(path, data) {
+              initWorker()
+              path = Array.prototype.slice.call(path, 0)
+              const name = path.pop()
+              if (typeof data === "string") data = new TextEncoder().encode(data)
+              return new Promise((res) => {
+                worker.postMessage({ nonce, action: "writeFile", path, name, data })
+                resMap.set(nonce++, res)
+              })
+            },
+            async remove(path, { recursive }) {
+              const [dir, name] = await dn.call(this, path)
+              await dir.removeEntry(name, { recursive })
+            },
+            async mkdir(path) {
+              const [dir, name] = await dn.call(this, path)
+              await dir.getDirectoryHandle(name, { create: true })
+            }
+          }
+        }
 
         const hash = location.hash.slice(1)
         if (hash.match(/^[+/0-9A-Za-z]{2,}={0,2}$/)) {
