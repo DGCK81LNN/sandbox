@@ -23,6 +23,9 @@
       button { padding: 3px 6px }
       #codeToolbarDiv > div { display: inline-block }
       #codeDiv .cm-editor { height: 20rem }
+      #actionsDiv input[type=file] { font-size: 0; margin-right: -0.2rem }
+      #actionsDiv input[type=file]::file-selector-button { font-size: 0.875rem }
+      #actionsDiv input[type=file]::-webkit-file-upload-button { font-size: 0.875rem }
       #textAndOut {
         display: flex;
         flex-wrap: wrap;
@@ -60,7 +63,7 @@
         </div>
       </div>
     </div>
-    <div style="margin:8px 0">
+    <div id=actionsDiv style="margin:8px 0">
       <div>
         out &larr;
         <button id=btn-eval>eval code</button>
@@ -91,7 +94,7 @@
       </div>
       <div>
         out &larr; read
-        <button id=btn-file>#file</button>
+        <input type=file id=file title="#file">
         as
         <button id=btn-filet>text</button>
         <button id=btn-filed>data url</button>
@@ -114,7 +117,9 @@
         </select>actions]
         <span id=moreActionsContainer>
           <span id=fontactions hidden>
-            <button id=btn-font-load>load fonts</button>
+            load
+            <input type=file id=file-font multiple accept=".ttf,.otf,.woff,.woff2">
+            |
             <button id=btn-font-unload-all>unload all</button>
           </span>
           <span id=opfsactions hidden>
@@ -138,7 +143,6 @@
     <fieldset id=myDivWrapper><legend>$myDiv</legend>
       <div id=myDiv></div>
     </fieldset>
-    <input type=file id=file style="display:none">
     <script>
       function $$$(id) { return document.getElementById(id) }
       ;(function () {
@@ -404,16 +408,13 @@
           })
         })
 
-        addAction("file", () => {
-          file.click()
-        })
         addAction("filet", () => {
           var r = new FileReader()
           r.onload = () => {
             SoulLS.out = r.result
             r.onload = null
           }
-          r.readAsText(file.files[0])
+          r.readAsText(SoulLS.file)
         })
         addAction("filed", () => {
           var r = new FileReader()
@@ -421,7 +422,7 @@
             SoulLS.out = r.result
             r.onload = null
           }
-          r.readAsDataURL(file.files[0])
+          r.readAsDataURL(SoulLS.file)
         })
         addAction("fileb", () => {
           SoulLS.out = window.URL.createObjectURL(SoulLS.file)
@@ -461,13 +462,7 @@
 
         // fontactions
         {
-          const $file = document.createElement("input")
-          $file.type = "file"
-          $file.multiple = true
-          $file.accept = ".ttf,.otf,.woff,.woff2"
-          addAction("font-load", () => {
-            $file.click()
-          })
+          const $file = $$$("file-font")
           $file.addEventListener("change", () => {
             for (const file of $file.files) {
               let name = file.name
