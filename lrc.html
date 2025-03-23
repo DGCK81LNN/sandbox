@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>丐版LRC歌词制作器</title>
+    <style>
+      * {
+        font-family: sans-serif;
+      }
+      #canvas {
+        width: 100%;
+        height: 100px;
+        touch-action: none;
+      }
+      #textarea {
+        width: 100%;
+        box-sizing: border-box;
+        resize: none;
+        font-size: 1em;
+      }
+      #lineCont {
+        margin: 0;
+        border: inset;
+        height: 15lh;
+        overflow-y: scroll;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+        list-style: none;
+        padding: 0.25rem;
+      }
+      .line {
+        border-bottom: 1px dashed gray;
+      }
+      .line-active {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <audio id="audio" controls></audio>
+    <button onclick="toggleMode()">mode</button>
+    <button onclick="back()">back (←)</button>
+    <button id="btnMark" onclick="mark()" disabled>mark (→)</button>
+    <input type="file" id="file" />
+    <canvas id="canvas" height="100"></canvas>
+    <textarea id="textarea" rows="15"></textarea>
+    <ul id="lineCont" hidden></ul>
+
+    <script>
+      const WAVE_PIXELS_PER_SECOND = 160
+      const WAVE_VERTICAL_SCALE = 0.8
+
+      const audio = document.getElementById("audio")
+      const file = document.getElementById("file")
+      const textarea = document.getElementById("textarea")
+      const canvas = document.getElementById("canvas")
+      const lineCont = document.getElementById("lineCont")
+      const btnMark = document.getElementById("btnMark")
+
+      const auCtx = new OfflineAudioContext(1, 1, 44100)
+
+      let bufMode = false
+      let bufLines = []
+      let bufLineN = 0
+      let els = []
+      function toggleMode() {
+        lineCont.textContent = ""
+        if (bufMode = !bufMode) {
+          bufLines = textarea.value.replace(/\n$/, "").split("\n")
+          bufLineN = Math.min(bufLineN, bufLines.length - 1)
+          els = bufLines.map((line, i) => {
+            const el = document.createElement("li")
+            el.classList.add("line")
+            if (i === bufLineN) 
+              el.classList.add("line-active")
+            el.textContent = line
+            return lineCont.appendChild(el)
+          })
+          textarea.hidden = true
+          lineCont.hidden = false
+        } else {
+          textarea.value = bufLines.join("\n").replace(/\n?$/, "\n")
+          textarea.hidden = false
+          lineCont.hidden = true
+        }
+        btnMark.disabled = !bufMode
+      }
+
+      function back() {
+        audio.currentTime -= 2
+        audio.play()
+      }
+
+      function mark() {
+        if (!bufMode) return
+        const totalSecs = audio.currentTime
+        const mins = Math.floor(totalSecs / 60)
+        const secs = totalSecs % 60
+        const ts = `[${mins.toString().padStart(2, "0")}:${secs.toFixed(3).padStart(6, "0")}]`
+        bufLines[bufLineN] = bufLines[bufLineN].replace(/^(\[\d?\d:(\d\d:)?\d\d\.\d{1,3}\])?\s*/, ts)
+        els[bufLineN].textContent = bufLines[bufLineN]
+        selectLine(bufLineN + 1)
+      }
+
+      function selectLine(i, noScroll) {
+        if (i < 0 || i >= bufLines.length) return
+        els[bufLineN].classList.remove("line-active")
+        els[i].classList.add("line-active")
+        noScroll || els[i].scrollIntoView({ behavior: "smooth", block: "center" })
+        bufLineN = i
+      }
+      function refer(i) {
+        const m = bufLines[i].match(/\[(\d?\d:(?:\d\d:)?\d\d\.\d{1,3})\]/)
+        if (!m) return
+        const totalSecs = m[1].split(":").reduce((a, b) => a * 60 + +b)
+        audio.currentTime = totalSecs
+      }
+      lineCont.onclick = e => {
+        const el = e.target.closest(".line")
+        if (!el) return
+        const i = els.indexOf(el)
+        if (i >= 0) selectLine(i, true)
+      }
+      lineCont.ondblclick = e => {
+        const el = e.target.closest(".line")
+        if (!el) return
+        const i = els.indexOf(el)
+        if (i >= 0) refer(i)
+      }
+
+      let peakLow, peakHigh
+      async function generatePeak(blob) {
+        const buf = await blob.arrayBuffer()
+        const aub = await auCtx.decodeAudioData(buf)
+        const channels = []
+        const channelCount = aub.numberOfChannels;
+        for (let i = 0; i < channelCount; ++i)
+            channels.push(aub.getChannelData(i));
+        const len = Math.ceil(aub.duration * WAVE_PIXELS_PER_SECOND)
+        const delta = Math.ceil(aub.sampleRate / WAVE_PIXELS_PER_SECOND)
+        peakLow = new Float32Array(len)
+        peakHigh = new Float32Array(len)
+        for (let i = 0, si = 0; i < len; ++i, si += delta) {
+          let min = 0
+          let max = 0
+          for (let i = 0; i < channelCount; ++i) {
+            let sampleSlice = channels[i].slice(si, si + delta)
+            min += Math.min(...sampleSlice)
+            max += Math.max(...sampleSlice)
+          }
+          peakLow[i] = min / channelCount
+          peakHigh[i] = max / channelCount
+          if (i % 500 === 0) await new Promise(setTimeout)
+        }
+      }
+
+      file.onchange = e => {
+        const blob = e.target.files[0]
+        const url = URL.createObjectURL(blob)
+        audio.src = url
+        generatePeak(blob)
+      }
+
+      const ctx = canvas.getContext("2d");
+      function draw() {
+        requestAnimationFrame(draw)
+        var width = canvas.width = canvas.offsetWidth;
+        var height = canvas.height;
+        ctx.fillStyle = "#808080";
+        ctx.fillRect(0, height >> 1, width, 1);
+        ctx.setTransform(1, 0, 0, -height * WAVE_VERTICAL_SCALE >> 1, 0, height >> 1);
+        if (peakLow) {
+            var i = (0 | audio.currentTime * WAVE_PIXELS_PER_SECOND) - (width >> 1); // 当前列在peakData中的索引
+            var x = 0; // 当前列在画布中的横坐标
+            if (i < 0) x = -i, i = 0;
+            for (; x < width; ++i, ++x) {
+                ctx.fillRect(x, peakLow[i], 1, peakHigh[i] - peakLow[i]);
+            }
+        }
+        ctx.fillStyle = "#ff0000";
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.fillRect((width >> 1) - 1, 0, 3, height);
+      }
+      draw()
+
+      var waveScrolling = false,
+          waveScrollInitialPos = NaN,
+          waveScrollInitialValue = NaN;
+      let mouseDown = e => {
+          audio.pause();
+          waveScrolling = true;
+          waveScrollInitialPos = e.pageX;
+          waveScrollInitialValue = audio.currentTime;
+          if (!e instanceof TouchEvent) e.preventDefault();
+      };
+      let mouseMove = e => {
+          if (!waveScrolling) return;
+          var x = e instanceof TouchEvent ? e.touches[0].pageX : e.pageX;
+          var time = waveScrollInitialValue + (waveScrollInitialPos - x) / WAVE_PIXELS_PER_SECOND;
+          if (time < 0) time = 0;
+          if (time > audio.duration) time = audio.duration;
+          audio.currentTime = time;
+          if (!e instanceof TouchEvent) e.preventDefault();
+      }
+      let mouseUp = e => {
+          waveScrolling = false;
+          if (!e instanceof TouchEvent) e.preventDefault();
+      }
+      canvas.addEventListener("mousedown", mouseDown);
+      canvas.addEventListener("mousemove", mouseMove);
+      window.addEventListener("mouseup", mouseUp);
+      canvas.addEventListener("touchstart", mouseDown);
+      canvas.addEventListener("touchmove", mouseMove);
+      window.addEventListener("touchend", mouseUp);
+      canvas.addEventListener("touchcancel", () => {
+          audio.currentTime = waveScrollInitialValue;
+      });
+
+      document.addEventListener("keydown", e => {
+        if (!bufMode) return
+        switch (e.key) {
+          case " ":
+            if (e.target.tagName === "BUTTON") return
+            audio.paused ? audio.play() : audio.pause()
+            break
+          case "ArrowLeft":
+            back()
+            break
+          case "ArrowRight":
+            mark()
+            break
+          case "ArrowUp":
+            selectLine(bufLineN - 1)
+            break
+          case "ArrowDown":
+            selectLine(bufLineN + 1)
+            break
+          default: return
+        }
+        e.preventDefault()
+      })
+    </script>
+  </body>
+</html>
