@@ -504,6 +504,7 @@
                 if (data.action === "writeFile") {
                   const file = await dir.getFileHandle(data.name, { create: true })
                   const handle = await file.createSyncAccessHandle()
+                  handle.truncate(0)
                   handle.write(data.data)
                   handle.flush()
                   handle.close()
