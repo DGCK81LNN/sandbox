@@ -683,11 +683,12 @@
           }
         }
 
-        const hash = location.hash.slice(1)
-        if (hash.match(/^[+/0-9A-Za-z]{2,}={0,2}$/)) {
+        const load = location.search.slice(1) || location.hash.slice(1)
+        let m
+        if (load.match(/^[+/0-9A-Za-z]{2,}={0,2}$/)) {
           let code = ""
           try {
-            code = inflateB64UTF8(hash)
+            code = inflateB64UTF8(load)
           } catch (err) {
             code =
               "/*\n! SoulLS LOAD ERROR !\n" +
@@ -698,6 +699,16 @@
             SoulLS.code = code
           }
           SoulLS.eval(code)
+        } else if (m = load.match(/(?:^|&)load=([^&]+)/)) {
+          const url = decodeURIComponent(m[1])
+          fetch(url).then(async r => SoulLS.eval(SoulLS.code = await r.text()))
+            .catch(err => {
+              SoulLS.code =
+                "/*\n! SoulLS LOAD ERROR !\n" +
+                String(err).replace(/\/[\\]*(?=\*)|\*[\\]*(?=\/)/g, e => `${e[0]}\\${e.slice(1)}`) +
+                "\n*/\n"
+              throw err
+            })
         }
       })()
     </script>
