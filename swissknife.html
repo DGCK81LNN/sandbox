@@ -701,6 +701,10 @@
           SoulLS.eval(code)
         } else if (m = load.match(/(?:^|&)load=([^&]+)/)) {
           const url = decodeURIComponent(m[1])
+          SoulLS.code =
+            "/*\n... SoulLS LOADING ...\n" +
+            url.replace(/\/[\\]*(?=\*)|\*[\\]*(?=\/)/g, e => `${e[0]}\\${e.slice(1)}`) +
+            "\n*/\n"
           fetch(url, { cache: "no-cache" })
             .then(async r => SoulLS.eval(SoulLS.code = await r.text()))
             .catch(err => {
